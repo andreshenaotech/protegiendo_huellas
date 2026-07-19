@@ -39,8 +39,9 @@ export async function updateSession(request: NextRequest) {
 
   const { data } = await supabase.auth.getClaims();
   const isLoginPage = request.nextUrl.pathname === "/admin/login";
+  const isAdminPage = request.nextUrl.pathname.startsWith("/admin");
 
-  if (!data?.claims?.sub && !isLoginPage) {
+  if (!data?.claims?.sub && isAdminPage && !isLoginPage) {
     const url = request.nextUrl.clone();
     url.pathname = "/admin/login";
     url.search = "";

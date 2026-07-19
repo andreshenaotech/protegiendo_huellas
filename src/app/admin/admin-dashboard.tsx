@@ -11,6 +11,7 @@ import {
   useState,
 } from "react";
 import type { CurrentAdmin } from "@/lib/auth";
+import { DEFAULT_DOG_DESCRIPTION } from "@/lib/dog-content";
 import {
   DOG_IMAGES_BUCKET,
   DOG_IMAGE_TYPES,
@@ -97,6 +98,10 @@ export function AdminDashboard({ admin, initialDogs }: AdminDashboardProps) {
     );
   }, [dogs, search]);
 
+  const editingDog = editingId === null
+    ? null
+    : dogs.find((dog) => dog.id === editingId) ?? null;
+
   const resetDogForm = () => {
     setDogForm(emptyDogForm);
     setImageFile(null);
@@ -146,14 +151,14 @@ export function AdminDashboard({ admin, initialDogs }: AdminDashboardProps) {
 
     const values = {
       name: dogForm.name.trim(),
-      description: dogForm.description.trim() || null,
+      description: dogForm.description.trim() || DEFAULT_DOG_DESCRIPTION,
       age: dogForm.age.trim(),
       size: dogForm.size.trim(),
       status: dogForm.status.trim(),
     };
 
-    if (!values.name || !values.description || !values.age || !values.size || !values.status) {
-      setDogNotice({ type: "error", text: "Completa nombre, descripción, edad, tamaño y estado." });
+    if (!values.name || !values.age || !values.size || !values.status) {
+      setDogNotice({ type: "error", text: "Completa nombre, edad, tamaño y estado." });
       return;
     }
 
@@ -242,6 +247,66 @@ export function AdminDashboard({ admin, initialDogs }: AdminDashboardProps) {
     } finally {
       setDogBusy(false);
     }
+  };
+
+  const removeCurrentImage = async () => {
+    if (!editingDog?.image_path) return;
+
+    const confirmed = window.confirm(
+      `¿Eliminar la imagen actual de ${editingDog.name}? Podrás subir otra después.`,
+    );
+    if (!confirmed) return;
+
+    const previousPath = editingDog.image_path;
+    setDogBusy(true);
+    setDogNotice(null);
+
+    const { data: dogWithoutImage, error: updateError } = await supabase
+      .from("dogs")
+      .update({ image_path: null })
+      .eq("id", editingDog.id)
+      .select("*")
+      .single();
+
+    if (updateError || !dogWithoutImage) {
+      setDogNotice({ type: "error", text: "No fue posible quitar la imagen de la ficha." });
+      setDogBusy(false);
+      return;
+    }
+
+    const { error: storageError } = await supabase.storage
+      .from(DOG_IMAGES_BUCKET)
+      .remove([previousPath]);
+
+    if (storageError) {
+      const { data: restoredDog, error: restoreError } = await supabase
+        .from("dogs")
+        .update({ image_path: previousPath })
+        .eq("id", editingDog.id)
+        .select("*")
+        .single();
+
+      if (!restoreError && restoredDog) {
+        setDogs((current) => current.map((dog) => dog.id === editingDog.id ? restoredDog : dog));
+      } else {
+        setDogs((current) => current.map((dog) => dog.id === editingDog.id ? dogWithoutImage : dog));
+      }
+
+      setDogNotice({
+        type: "error",
+        text: restoreError
+          ? "La imagen dejó de mostrarse, pero el archivo no pudo eliminarse de Storage."
+          : "No fue posible eliminar el archivo de imagen. La ficha conserva la imagen anterior.",
+      });
+      setDogBusy(false);
+      router.refresh();
+      return;
+    }
+
+    setDogs((current) => current.map((dog) => dog.id === editingDog.id ? dogWithoutImage : dog));
+    setDogNotice({ type: "success", text: `La imagen de ${editingDog.name} fue eliminada.` });
+    setDogBusy(false);
+    router.refresh();
   };
 
   const startEditing = (dog: Dog) => {
@@ -391,7 +456,8 @@ export function AdminDashboard({ admin, initialDogs }: AdminDashboardProps) {
               </label>
               <label className="admin-field">
                 <span>Descripción</span>
-                <textarea required rows={5} maxLength={1200} placeholder="Cuenta un poco sobre su historia y personalidad." value={dogForm.description} onChange={(event) => updateDogField("description", event.target.value)} />
+                <textarea rows={5} maxLength={1200} placeholder="Cuenta un poco sobre su historia y personalidad." value={dogForm.description} onChange={(event) => updateDogField("description", event.target.value)} />
+                <small>Si la dejas vacía, se agregará automáticamente el texto informativo predeterminado.</small>
               </label>
               <div className="admin-field-row">
                 <label className="admin-field">
@@ -408,6 +474,20 @@ export function AdminDashboard({ admin, initialDogs }: AdminDashboardProps) {
                 <input required maxLength={160} placeholder="Ej. Esterilizada y vacunada" value={dogForm.status} onChange={(event) => updateDogField("status", event.target.value)} />
                 <small>Es un texto libre: esterilizado, castrado, vacunado u otra información.</small>
               </label>
+              {editingDog?.image_path && (
+                <div className="admin-current-image">
+                  <div className="admin-current-image-thumb">
+                    <Image src={getDogImageUrl(editingDog.image_path)!} alt={`Imagen actual de ${editingDog.name}`} fill sizes="72px" />
+                  </div>
+                  <div className="admin-current-image-copy">
+                    <strong>Imagen actual</strong>
+                    <span>Puedes reemplazarla eligiendo otra o eliminarla ahora.</span>
+                  </div>
+                  <button className="admin-remove-image" type="button" onClick={removeCurrentImage} disabled={dogBusy}>
+                    Eliminar imagen
+                  </button>
+                </div>
+              )}
               <label className="admin-field admin-file-field">
                 <span>{editingId === null ? "Imagen" : "Nueva imagen"}</span>
                 <input ref={fileInputRef} type="file" accept="image/jpeg,image/png,image/webp" onChange={handleImageChange} />

@@ -3,16 +3,19 @@ import { DogCatalog } from "@/components/dog-catalog";
 import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
 import { ArrowIcon, ChatIcon, EmailIcon, FacebookIcon, HeartIcon, InstagramIcon, PhoneIcon, PinIcon, SearchIcon, TikTokIcon } from "@/components/icons";
+import { ScrollReveals } from "@/components/scroll-reveals";
+import { getCurrentAdmin } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
 
 export default async function Home() {
   const supabase = await createClient();
-  const { data: dogs, error } = await supabase
-    .from("dogs")
-    .select("*")
-    .order("id", { ascending: true });
+  const [admin, dogsResult] = await Promise.all([
+    getCurrentAdmin(),
+    supabase.from("dogs").select("*").order("id", { ascending: true }),
+  ]);
+  const { data: dogs, error } = dogsResult;
 
   if (error) {
     throw new Error("No fue posible cargar los perros en adopción.");
@@ -22,6 +25,7 @@ export default async function Home() {
     <>
       <a className="skip-link" href="#main">Saltar al contenido</a>
       <Header />
+      <ScrollReveals />
 
       <main id="main">
         <section className="hero" id="inicio">
@@ -56,7 +60,7 @@ export default async function Home() {
           </div>
         </section>
 
-        <div className="container stats-wrap" aria-label="Cifras de adopción">
+        <div className="container stats-wrap" aria-label="Cifras de adopción" data-reveal="up">
           <div className="stats">
             <div className="stat"><strong>{dogs.length}</strong><span>Perritos publicados</span></div>
             <div className="stat"><strong>100%</strong><span>Esterilizados o castrados</span></div>
@@ -64,14 +68,16 @@ export default async function Home() {
           </div>
         </div>
 
-        <DogCatalog dogs={dogs} />
+        <DogCatalog dogs={dogs} canEdit={Boolean(admin)} />
 
         <section className="process-section" id="proceso">
           <div className="container">
-            <p className="eyebrow">Una decisión para toda la vida</p>
-            <h2 className="section-title">Adoptar es más fácil de lo que imaginas</h2>
-            <p className="section-copy">Queremos encontrar la familia adecuada para cada peludo. Escríbenos y te acompañaremos personalmente durante el proceso.</p>
-            <div className="process-grid">
+            <div data-reveal="up">
+              <p className="eyebrow">Una decisión para toda la vida</p>
+              <h2 className="section-title">Adoptar es más fácil de lo que imaginas</h2>
+              <p className="section-copy">Queremos encontrar la familia adecuada para cada peludo. Escríbenos y te acompañaremos personalmente durante el proceso.</p>
+            </div>
+            <div className="process-grid" data-reveal="up">
               <article className="process-card">
                 <span className="step-number" aria-hidden="true">01</span>
                 <span className="step-icon" aria-hidden="true"><SearchIcon /></span>
@@ -96,7 +102,7 @@ export default async function Home() {
 
         <section className="story-section" id="nosotros">
           <div className="container story-grid">
-            <div className="story-visual" aria-hidden="true">
+            <div className="story-visual" aria-hidden="true" data-reveal="left">
               <Image
                 src="/dog1.png"
                 alt=""
@@ -106,7 +112,7 @@ export default async function Home() {
               />
               <div className="story-note"><strong>No compres una vida.</strong><span>Adopta una historia que está lista para comenzar.</span></div>
             </div>
-            <div className="story-copy">
+            <div className="story-copy" data-reveal="right">
               <p className="eyebrow">Fundación Protegiendo Huellas</p>
               <h2 className="section-title">El amor deja huellas que duran para siempre</h2>
               <p className="section-copy">Trabajamos desde Paipa, Boyacá, para conectar perros que esperan una oportunidad con familias comprometidas a quererlos y protegerlos.</p>
@@ -120,16 +126,55 @@ export default async function Home() {
           </div>
         </section>
 
+        <section className="donation-section" id="donaciones">
+          <div className="container">
+            <div className="donation-card">
+              <div className="donation-copy" data-reveal="left">
+                <p className="eyebrow">Tu ayuda también rescata</p>
+                <h2>Cada aporte se convierte en alimento, cuidado y nuevas oportunidades.</h2>
+                <p>No importa el monto. Tu donación nos ayuda a cubrir alimento, atención veterinaria y las necesidades diarias de los perros que protegemos mientras encuentran una familia.</p>
+                <div className="donation-promise">
+                  <span className="donation-heart" aria-hidden="true"><HeartIcon /></span>
+                  <span><strong>Gracias por dejar una huella.</strong> Con tu ayuda podemos seguir cuidándolos.</span>
+                </div>
+              </div>
+
+              <div className="donation-details" aria-label="Datos para realizar donaciones" data-reveal="right">
+                <div className="donation-details-heading">
+                  <p>Elige cómo donar</p>
+                  <span>Datos oficiales de la fundación</span>
+                </div>
+
+                <article className="donation-method">
+                  <span className="donation-method-type">Transferencia bancaria</span>
+                  <h3>Bancolombia</h3>
+                  <dl>
+                    <div><dt>Tipo de cuenta</dt><dd>Cuenta de ahorros</dd></div>
+                    <div><dt>Número de cuenta</dt><dd className="donation-number">03803934290</dd></div>
+                    <div><dt>NIT</dt><dd className="donation-number">901312316</dd></div>
+                  </dl>
+                </article>
+
+                <article className="donation-method donation-method-mobile">
+                  <span className="donation-method-type">Transferencia desde el celular</span>
+                  <h3>Nequi / Daviplata</h3>
+                  <p className="donation-number">3227464595</p>
+                </article>
+              </div>
+            </div>
+          </div>
+        </section>
+
         <section className="social-section" id="redes">
           <div className="container">
-            <div className="social-heading">
+            <div className="social-heading" data-reveal="up">
               <div>
                 <p className="eyebrow">Síguenos y comparte</p>
                 <h2 className="section-title">Un like puede acercarlos a su próximo hogar</h2>
               </div>
               <p className="social-intro">Dale like a nuestras publicaciones y compártelas. Cada interacción ayuda a que más personas conozcan a los peludos que buscan una familia y fortalece el trabajo de la fundación.</p>
             </div>
-            <div className="social-grid" aria-label="Redes sociales de Fundación Protegiendo Huellas">
+            <div className="social-grid" aria-label="Redes sociales de Fundación Protegiendo Huellas" data-reveal="up">
               <a className="social-profile" href="https://www.facebook.com/fundacion.protegiendo.huellas.2025" target="_blank" rel="noopener noreferrer">
                 <span className="social-profile-icon"><FacebookIcon /></span>
                 <span className="social-profile-copy"><strong>Facebook</strong><span>Dale like y comparte</span></span>
@@ -151,7 +196,7 @@ export default async function Home() {
 
         <section className="contact-section" id="contacto">
           <div className="container">
-            <div className="contact-card">
+            <div className="contact-card" data-reveal="up">
               <div className="contact-copy">
                 <h2>¿Listo para cambiar su mundo?</h2>
                 <p>Cuéntanos qué peludo conquistó tu corazón. Estaremos felices de resolver tus dudas y acompañarte en este paso.</p>
