@@ -2,7 +2,7 @@ import Image from "next/image";
 import { DogCatalog } from "@/components/dog-catalog";
 import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
-import { ArrowIcon, ChatIcon, EmailIcon, HeartIcon, PhoneIcon, PinIcon, SearchIcon } from "@/components/icons";
+import { ArrowIcon, ChatIcon, EmailIcon, FacebookIcon, HeartIcon, InstagramIcon, PhoneIcon, PinIcon, SearchIcon, TikTokIcon } from "@/components/icons";
 
 export default function Home() {
   return (
@@ -30,20 +30,15 @@ export default function Home() {
             <div className="hero-visual" aria-hidden="true">
               <Image
                 className="hero-dog"
-                src="/dog.png"
+                src="/dog_hero.png"
                 alt=""
                 width={1200}
                 height={1500}
-                loading="eager"
-                fetchPriority="high"
+                preload
                 sizes="(max-width: 820px) 660px, 730px"
                 style={{ height: "auto" }}
               />
               <div className="hero-badge"><div><strong>51</strong><span>corazones esperando</span></div></div>
-              <div className="float-card">
-                <span className="float-card-icon">♥</span>
-                <span><strong>Adoptar transforma</strong><span>Una oportunidad, una familia</span></span>
-              </div>
             </div>
           </div>
         </section>
@@ -90,12 +85,11 @@ export default function Home() {
           <div className="container story-grid">
             <div className="story-visual" aria-hidden="true">
               <Image
-                src="/dog.png"
+                src="/dog1.png"
                 alt=""
                 width={1200}
                 height={1500}
                 sizes="(max-width: 820px) calc(100vw - 28px), 500px"
-                style={{ height: "auto" }}
               />
               <div className="story-note"><strong>No compres una vida.</strong><span>Adopta una historia que está lista para comenzar.</span></div>
             </div>
@@ -113,6 +107,35 @@ export default function Home() {
           </div>
         </section>
 
+        <section className="social-section" id="redes">
+          <div className="container">
+            <div className="social-heading">
+              <div>
+                <p className="eyebrow">Síguenos y comparte</p>
+                <h2 className="section-title">Un like puede acercarlos a su próximo hogar</h2>
+              </div>
+              <p className="social-intro">Dale like a nuestras publicaciones y compártelas. Cada interacción ayuda a que más personas conozcan a los peludos que buscan una familia y fortalece el trabajo de la fundación.</p>
+            </div>
+            <div className="social-grid" aria-label="Redes sociales de Fundación Protegiendo Huellas">
+              <a className="social-profile" href="https://www.facebook.com/fundacion.protegiendo.huellas.2025" target="_blank" rel="noopener noreferrer">
+                <span className="social-profile-icon"><FacebookIcon /></span>
+                <span className="social-profile-copy"><strong>Facebook</strong><span>Dale like y comparte</span></span>
+                <span className="social-profile-arrow"><ArrowIcon /></span>
+              </a>
+              <a className="social-profile" href="https://www.instagram.com/protegiendo_huellas/" target="_blank" rel="noopener noreferrer">
+                <span className="social-profile-icon"><InstagramIcon /></span>
+                <span className="social-profile-copy"><strong>Instagram</strong><span>Sigue sus historias</span></span>
+                <span className="social-profile-arrow"><ArrowIcon /></span>
+              </a>
+              <a className="social-profile" href="https://www.tiktok.com/@protegiendo.huellas?_r=1&_t=ZS-989SSm8VsZj" target="_blank" rel="noopener noreferrer">
+                <span className="social-profile-icon"><TikTokIcon /></span>
+                <span className="social-profile-copy"><strong>TikTok</strong><span>Comparte sus videos</span></span>
+                <span className="social-profile-arrow"><ArrowIcon /></span>
+              </a>
+            </div>
+          </div>
+        </section>
+
         <section className="contact-section" id="contacto">
           <div className="container">
             <div className="contact-card">
@@ -120,8 +143,7 @@ export default function Home() {
                 <h2>¿Listo para cambiar su mundo?</h2>
                 <p>Cuéntanos qué peludo conquistó tu corazón. Estaremos felices de resolver tus dudas y acompañarte en este paso.</p>
                 <div className="contact-actions">
-                  <a className="btn btn-light" href="tel:+573227464595"><PhoneIcon /> Llamar ahora</a>
-                  <a className="btn btn-outline btn-outline-light" href="mailto:fundacionprotegiendohuellas@gmail.com?subject=Quiero%20adoptar">Enviar un correo</a>
+                  <a className="btn btn-light" href="https://www.facebook.com/fundacion.protegiendo.huellas.2025" target="_blank" rel="noopener noreferrer"><FacebookIcon /> Contactar por Facebook</a>
                 </div>
               </div>
               <div className="contact-details">

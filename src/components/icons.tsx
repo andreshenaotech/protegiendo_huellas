@@ -48,6 +48,18 @@ export function EmailIcon() {
   return <svg {...iconProps}><path d="M4 4h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Z" /><path d="m22 6-10 7L2 6" /></svg>;
 }
 
+export function FacebookIcon() {
+  return <svg {...iconProps}><path d="M14 8h3V4h-3c-3.3 0-5 2-5 5v3H6v4h3v6h4v-6h3l1-4h-4V9c0-.7.3-1 1-1Z" /></svg>;
+}
+
+export function InstagramIcon() {
+  return <svg {...iconProps}><rect x="3" y="3" width="18" height="18" rx="5" /><circle cx="12" cy="12" r="4" /><circle cx="17.5" cy="6.5" r="0.7" fill="currentColor" stroke="none" /></svg>;
+}
+
+export function TikTokIcon() {
+  return <svg {...iconProps}><path d="M15 3v11.5a4.5 4.5 0 1 1-4-4.47" /><path d="M15 3c.5 3 2.2 4.8 5 5" /></svg>;
+}
+
 export function PinIcon() {
   return <svg {...iconProps}><path d="M21 10c0 7-9 12-9 12S3 17 3 10a9 9 0 1 1 18 0Z" /><circle cx="12" cy="10" r="3" /></svg>;
 }
