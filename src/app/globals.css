@@ -25,17 +25,31 @@
 }
 
 html {
+  width: 100%;
+  max-width: 100%;
   scroll-behavior: smooth;
   scroll-padding-top: 96px;
+  overflow-x: hidden;
+  overscroll-behavior-x: none;
 }
 
 body {
+  position: relative;
+  width: 100%;
+  max-width: 100%;
   margin: 0;
   color: var(--ink);
   background: var(--cream);
   font-family: "Trebuchet MS", "Segoe UI", Arial, sans-serif;
   line-height: 1.6;
   overflow-x: hidden;
+}
+
+@supports (overflow-x: clip) {
+  html,
+  body {
+    overflow-x: clip;
+  }
 }
 
 body.modal-open {
@@ -424,19 +438,20 @@ button {
 .hero-dog {
   position: absolute;
   z-index: 2;
-  right: -45px;
+  right: -245px;
   bottom: -90px;
-  width: min(630px, 52vw);
+  width: min(835px, 66vw);
   height: auto;
   max-width: none;
   filter: drop-shadow(0 35px 45px rgba(25, 53, 33, 0.22));
+  pointer-events: none;
 }
 
 .hero-badge {
   position: absolute;
   z-index: 3;
   right: 80px;
-  bottom: 16px;
+  bottom: -25px;
   display: grid;
   width: 132px;
   height: 132px;
@@ -1504,6 +1519,25 @@ a.contact-link:hover {
   font-size: 0.78rem;
 }
 
+.footer-credit {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 18px;
+  color: rgba(255, 255, 255, 0.52);
+  font-size: 0.72rem;
+  line-height: 1.5;
+  transition: color 180ms ease;
+}
+
+.footer-credit strong {
+  color: var(--lime);
+}
+
+.footer-credit:hover {
+  color: white;
+}
+
 /* Modal */
 .modal {
   position: fixed;
@@ -1686,15 +1720,15 @@ a.contact-link:hover {
   }
 
   .hero-dog {
-    right: -90px;
+    right: -290px;
     bottom: -75px;
-    width: 580px;
+    width: 760px;
   }
 
   .hero-badge {
     top: auto;
     right: 7%;
-    bottom: 16px;
+    bottom: -15px;
     width: 112px;
     height: 112px;
   }
@@ -1769,25 +1803,31 @@ a.contact-link:hover {
     grid-template-columns: 1fr;
   }
 
+  .hero-content {
+    position: relative;
+    z-index: 4;
+  }
+
   .hero h1 {
     max-width: 650px;
   }
 
   .hero-visual {
+    z-index: 1;
     min-height: 480px;
   }
 
   .hero-dog {
     right: 50%;
     bottom: -95px;
-    width: 660px;
-    transform: translateX(53%);
+    width: 850px;
+    transform: translateX(76%);
   }
 
   .hero-badge {
     top: auto;
     right: 7%;
-    bottom: 16px;
+    bottom: -15px;
   }
 
   .float-card {
@@ -1864,18 +1904,18 @@ a.contact-link:hover {
   }
 
   .hero-visual {
-    min-height: 390px;
+    min-height: 430px;
   }
 
   .hero-dog {
-    bottom: -85px;
-    width: 550px;
+    bottom: -145px;
+    width: 725px;
   }
 
   .hero-badge {
     top: auto;
     right: 0;
-    bottom: 10px;
+    bottom: -8px;
     width: 94px;
     height: 94px;
     border-width: 5px;

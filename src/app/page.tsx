@@ -33,7 +33,7 @@ export default async function Home() {
             <div className="hero-content">
               <p className="eyebrow">Perritos en adopción · Paipa</p>
               <h1>Tu nuevo mejor <span className="highlight">amigo</span> te espera.</h1>
-              <p className="hero-copy">Abre las puertas de tu hogar a una historia que merece un final feliz. Conoce a nuestros peludos, enamórate y cambia dos vidas para siempre.</p>
+              <p className="hero-copy">Abre las puertas de tu hogar a una historia que merece un final feliz. Conoce a nuestros perritos, enamórate y cambia dos vidas para siempre.</p>
               <div className="hero-actions">
                 <a className="btn btn-primary" href="#adopta">Conocer perritos <ArrowIcon /></a>
                 <a className="btn btn-outline" href="#proceso">¿Cómo puedo adoptar?</a>
@@ -75,14 +75,14 @@ export default async function Home() {
             <div data-reveal="up">
               <p className="eyebrow">Una decisión para toda la vida</p>
               <h2 className="section-title">Adoptar es más fácil de lo que imaginas</h2>
-              <p className="section-copy">Queremos encontrar la familia adecuada para cada peludo. Escríbenos y te acompañaremos personalmente durante el proceso.</p>
+              <p className="section-copy">Queremos encontrar la familia adecuada para cada perrito. Escríbenos y te acompañaremos personalmente durante el proceso.</p>
             </div>
             <div className="process-grid" data-reveal="up">
               <article className="process-card">
                 <span className="step-number" aria-hidden="true">01</span>
                 <span className="step-icon" aria-hidden="true"><SearchIcon /></span>
                 <h3>Encuentra tu conexión</h3>
-                <p>Explora las fichas, conoce su edad y tamaño, y elige al peludo que hizo latir más fuerte tu corazón.</p>
+                <p>Explora las fichas, conoce su edad y tamaño, y elige al perrito que hizo latir más fuerte tu corazón.</p>
               </article>
               <article className="process-card">
                 <span className="step-number" aria-hidden="true">02</span>
@@ -117,11 +117,11 @@ export default async function Home() {
               <h2 className="section-title">El amor deja huellas que duran para siempre</h2>
               <p className="section-copy">Trabajamos desde Paipa, Boyacá, para conectar perros que esperan una oportunidad con familias comprometidas a quererlos y protegerlos.</p>
               <ul className="check-list">
-                <li>Todos los peludos publicados se entregan esterilizados o castrados.</li>
+                <li>Todos los perritos publicados se entregan esterilizados o castrados, si cumplen con la edad.</li>
                 <li>Buscamos adopciones conscientes, responsables y definitivas.</li>
                 <li>Te orientamos para encontrar el compañero más compatible contigo.</li>
               </ul>
-              <a className="btn btn-primary" href="#contacto">Hablar con la fundación</a>
+              <a className="btn btn-primary" href="#contacto">Hablar con la Fundación</a>
             </div>
           </div>
         </section>
@@ -132,7 +132,7 @@ export default async function Home() {
               <div className="donation-copy" data-reveal="left">
                 <p className="eyebrow">Tu ayuda también rescata</p>
                 <h2>Cada aporte se convierte en alimento, cuidado y nuevas oportunidades.</h2>
-                <p>No importa el monto. Tu donación nos ayuda a cubrir alimento, atención veterinaria y las necesidades diarias de los perros que protegemos mientras encuentran una familia.</p>
+                <p>No importa el monto. Tu donación nos ayuda a cubrir alimento, atención veterinaria y las necesidades diarias de los perritos que protegemos mientras encuentran una familia.</p>
                 <div className="donation-promise">
                   <span className="donation-heart" aria-hidden="true"><HeartIcon /></span>
                   <span><strong>Gracias por dejar una huella.</strong> Con tu ayuda podemos seguir cuidándolos.</span>
@@ -172,7 +172,7 @@ export default async function Home() {
                 <p className="eyebrow">Síguenos y comparte</p>
                 <h2 className="section-title">Un like puede acercarlos a su próximo hogar</h2>
               </div>
-              <p className="social-intro">Dale like a nuestras publicaciones y compártelas. Cada interacción ayuda a que más personas conozcan a los peludos que buscan una familia y fortalece el trabajo de la fundación.</p>
+              <p className="social-intro">Dale like a nuestras publicaciones y compártelas. Cada interacción ayuda a que más personas conozcan a los perritos que buscan una familia y fortalece el trabajo de la fundación.</p>
             </div>
             <div className="social-grid" aria-label="Redes sociales de Fundación Protegiendo Huellas" data-reveal="up">
               <a className="social-profile" href="https://www.facebook.com/fundacion.protegiendo.huellas.2025" target="_blank" rel="noopener noreferrer">
@@ -199,7 +199,7 @@ export default async function Home() {
             <div className="contact-card" data-reveal="up">
               <div className="contact-copy">
                 <h2>¿Listo para cambiar su mundo?</h2>
-                <p>Cuéntanos qué peludo conquistó tu corazón. Estaremos felices de resolver tus dudas y acompañarte en este paso.</p>
+                <p>Cuéntanos qué perrito conquistó tu corazón. Estaremos felices de resolver tus dudas y acompañarte en este paso.</p>
                 <div className="contact-actions">
                   <a className="btn btn-light" href="https://www.facebook.com/fundacion.protegiendo.huellas.2025" target="_blank" rel="noopener noreferrer"><FacebookIcon /> Contactar por Facebook</a>
                 </div>

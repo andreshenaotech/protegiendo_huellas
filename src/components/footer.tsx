@@ -21,6 +21,9 @@ export function Footer() {
             <Link href="/admin/login">Acceso administrativo</Link>
           </span>
         </div>
+        <a className="footer-credit" href="https://cv.andreshenao.com.au/" target="_blank" rel="noopener noreferrer">
+          Software donado con amor por <strong>Andres Henao · Developer</strong>
+        </a>
       </div>
     </footer>
   );
