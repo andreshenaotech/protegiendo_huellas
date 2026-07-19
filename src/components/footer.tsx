@@ -1,5 +1,6 @@
 import { Brand } from "@/components/brand";
 import { FacebookIcon, InstagramIcon, TikTokIcon } from "@/components/icons";
+import Link from "next/link";
 
 export function Footer() {
   return (
@@ -15,7 +16,10 @@ export function Footer() {
         </div>
         <div className="footer-bottom">
           <span>© {new Date().getFullYear()} Fundación Protegiendo Huellas.</span>
-          <span>Adopta con el corazón. Cuida con responsabilidad.</span>
+          <span className="footer-bottom-links">
+            <span>Adopta con el corazón. Cuida con responsabilidad.</span>
+            <Link href="/admin/login">Acceso administrativo</Link>
+          </span>
         </div>
       </div>
     </footer>

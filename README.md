@@ -29,8 +29,8 @@ credenciales globales.
 | Supabase | Proyecto `protegiendo_huellas` |
 | Supabase project ref | `irwdfcacgpznmvjofszq` |
 | Supabase URL | `https://irwdfcacgpznmvjofszq.supabase.co` |
-| Entorno de plataforma CLI | `SUPABASE_PROFILE=supabase` |
-| Nombre identificativo del token | `protegiendo-huellas` (no selecciona una cuenta) |
+| Perfil aislado de Supabase CLI | `protegiendo-huellas` |
+| Nombre identificativo del token | `protegiendo-huellas` |
 
 Si cualquier comando muestra otro propietario de GitHub, otro remoto, otro
 project ref o proyectos distintos, se debe **detener la operación**. No se debe
@@ -48,9 +48,8 @@ intentar corregir, enlazar, migrar o publicar hasta volver a verificar la cuenta
    solo porque ya esté autenticada. Primero debe verificarse que corresponde a
    la fuente de verdad de esta sección.
 5. Todos los comandos de Supabase CLI que accedan a la plataforma deben
-   ejecutarse con la variable de proceso `SUPABASE_PROFILE=supabase`. No usar
-   `--profile protegiendo-huellas`: ese flag selecciona un entorno/API, no una
-   cuenta de usuario.
+   ejecutarse con `--profile protegiendo-huellas`. Este perfil contiene la
+   sesión aislada creada para esta cuenta.
 6. No ejecutar `supabase db push`, migraciones, SQL remoto, generación de tipos
    enlazada ni cambios de Auth/Storage hasta confirmar el project ref exacto.
 7. No leer, imprimir, registrar ni pegar en un chat el contenido de `.env.local`.
@@ -90,29 +89,27 @@ sin depender de la clave SSH predeterminada ni de otra cuenta de GitHub.
 La CLI está instalada y fijada como dependencia del proyecto. Se debe ejecutar
 con `npx supabase` para usar esa versión y no una instalación global.
 
-Supabase CLI mantiene una sola sesión de cuenta activa por usuario del sistema.
-El flag `--profile` **no** crea sesiones de cuenta separadas: selecciona el
-entorno de plataforma (`supabase`, staging, local o un archivo personalizado).
-El nombre `protegiendo-huellas` identifica el token creado en el Dashboard, pero
-no funciona como selector de cuenta.
+Supabase CLI admite perfiles nombrados para conectarse a la API. En este
+repositorio se usa exclusivamente `protegiendo-huellas`; no se debe ejecutar un
+comando remoto sin ese perfil porque podría tomar otra sesión guardada en el
+equipo.
 
 La otra cuenta conectada mediante MCP/conector debe permanecer intacta. Para
 este repositorio se usa la sesión CLI de `andreshenaotech` y se impide operar
 sobre otro proyecto mediante la comprobación obligatoria del project ref.
 
-El inicio de sesión correcto se realiza en una terminal interactiva:
+El inicio de sesión correcto se realiza en una terminal interactiva y se guarda
+en el perfil aislado:
 
 ```powershell
-$env:SUPABASE_PROFILE = "supabase"
-npx supabase login --name protegiendo-huellas --output-format text --agent no
-Remove-Item Env:SUPABASE_PROFILE -ErrorAction SilentlyContinue
+npx supabase login --name protegiendo-huellas --profile protegiendo-huellas --output-format text --agent no
 ```
 
-El login cambia únicamente la sesión local de Supabase CLI; no modifica ni
-elimina proyectos de ninguna cuenta. No usa la clave `anon`, la clave
-`service_role` ni `.env.local`. Si otra herramienta necesita mantener dos
-sesiones CLI simultáneas, debe inyectar un `SUPABASE_ACCESS_TOKEN` específico
-desde un gestor seguro de secretos, nunca desde el repositorio o `.env.local`.
+El login cambia únicamente ese perfil de Supabase CLI; no modifica ni elimina
+proyectos de ninguna cuenta. No usa la clave `anon`, la clave `service_role` ni
+`.env.local`. Para automatización también se puede inyectar un
+`SUPABASE_ACCESS_TOKEN` específico desde un gestor seguro de secretos, nunca
+desde el repositorio.
 
 Antes de enlazar o realizar cualquier operación remota:
 
@@ -124,9 +121,8 @@ if ($linkedProjectRef -ne $expectedProjectRef) {
   throw "Proyecto Supabase incorrecto: $linkedProjectRef"
 }
 
-$env:SUPABASE_PROFILE = "supabase"
-npx supabase projects list --output-format text --agent no
-npx supabase migration list --linked --output-format text --agent no
+npx supabase projects list --profile protegiendo-huellas --output-format text --agent no
+npx supabase migration list --linked --profile protegiendo-huellas --output-format text --agent no
 ```
 
 La lista debe contener el proyecto `protegiendo_huellas` con ref
@@ -137,16 +133,13 @@ directorio `supabase/.temp` es local y está ignorado por Git.
 Antes de aplicar migraciones, comprobar el plan sin escrituras:
 
 ```powershell
-$env:SUPABASE_PROFILE = "supabase"
-npx supabase db push --dry-run --linked --output-format text --agent no
+npx supabase db push --dry-run --linked --profile protegiendo-huellas --output-format text --agent no
 ```
 
 Solo después de validar la salida del dry-run se puede ejecutar el push real:
 
 ```powershell
-$env:SUPABASE_PROFILE = "supabase"
-npx supabase db push --linked --output-format text --agent no
-Remove-Item Env:SUPABASE_PROFILE -ErrorAction SilentlyContinue
+npx supabase db push --linked --profile protegiendo-huellas --output-format text --agent no
 ```
 
 No se debe usar un conector Supabase o MCP previamente autenticado si no permite
@@ -168,6 +161,17 @@ NEXT_PUBLIC_SUPABASE_URL=https://irwdfcacgpznmvjofszq.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=<clave pública del proyecto>
 ```
 
+Las rutas protegidas del servidor que crean administradores también necesitan:
+
+```dotenv
+SUPABASE_SERVICE_ROLE_KEY=<clave service role del proyecto>
+```
+
+Esta clave nunca debe llevar el prefijo `NEXT_PUBLIC_`, importarse desde un
+componente cliente ni imprimirse en terminal. El navegador realiza el CRUD de
+perros con la clave pública y la sesión del admin; RLS decide si la operación
+está permitida.
+
 `NEXT_PUBLIC_SUPABASE_ANON_KEY` es la clave pública heredada y puede exponerse al
 navegador; el acceso real a los datos debe protegerse con permisos y políticas
 RLS. Para código nuevo, Supabase recomienda migrar a una clave `publishable`.
@@ -187,19 +191,51 @@ repositorio y nunca deben copiarse a `.env.example`.
 Referencias: [Supabase CLI login](https://supabase.com/docs/reference/cli/supabase-login)
 y [API keys de Supabase](https://supabase.com/docs/guides/getting-started/api-keys).
 
+## Panel administrativo
+
+- `/admin/login`: inicio de sesión para administradores.
+- `/admin`: panel protegido para agregar, editar y eliminar perros, subir una
+  imagen y cambiar la contraseña de la cuenta actual.
+- Solo la cuenta con rol `superadmin` puede crear otros administradores.
+- Los administradores nuevos pueden gestionar perros, pero no crear más cuentas.
+- La landing lee directamente la tabla `public.dogs`; una actualización aparece
+  al volver a cargar la página.
+
+La cuenta inicial se crea de forma segura sin escribir la contraseña en el
+repositorio:
+
+```powershell
+$env:INITIAL_ADMIN_EMAIL = "correo@ejemplo.com"
+$adminSecurePassword = Read-Host "Contraseña" -AsSecureString
+$adminCredential = [pscredential]::new("bootstrap", $adminSecurePassword)
+$env:INITIAL_ADMIN_PASSWORD = $adminCredential.GetNetworkCredential().Password
+npm run bootstrap:superadmin
+Remove-Item Env:INITIAL_ADMIN_EMAIL, Env:INITIAL_ADMIN_PASSWORD
+Remove-Variable adminSecurePassword, adminCredential
+```
+
+El script puede ejecutarse nuevamente para asegurar el rol `superadmin`; toma
+las credenciales solo de las variables del proceso. Para verificar RLS, CRUD y
+Storage de forma temporal y reversible se dispone de `npm run verify:supabase`
+con `VERIFY_ADMIN_EMAIL` y `VERIFY_ADMIN_PASSWORD` en el proceso.
+
 ## Comandos
 
 - `npm run dev`: inicia el entorno de desarrollo.
 - `npm run lint`: revisa el código con ESLint.
 - `npm run build`: genera la compilación de producción.
+- `npm run bootstrap:superadmin`: crea o actualiza la primera superadmin.
+- `npm run verify:supabase`: comprueba migración, permisos, CRUD y Storage.
 - `npm start`: sirve la compilación de producción.
 
 ## Estructura principal
 
 - `src/app/page.tsx`: composición de la landing.
-- `src/components/dog-catalog.tsx`: búsqueda, filtros, favoritos y modal.
-- `src/data/dogs.ts`: datos actuales de los perros.
+- `src/components/dog-catalog.tsx`: catálogo alimentado desde Supabase.
+- `src/app/admin`: login y panel administrativo.
+- `src/app/api/admin/users`: creación protegida de administradores.
+- `src/lib/supabase`: clientes aislados de navegador, servidor y service role.
+- `supabase/migrations`: esquema, datos iniciales, RLS y Storage versionados.
 - `src/app/globals.css`: sistema visual y estilos responsive.
-- `public/dog.png`: imagen provisional reutilizada del HTML original.
 
 El archivo `index.html` original se conserva en la raíz como referencia visual durante las siguientes iteraciones.

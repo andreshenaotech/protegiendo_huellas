@@ -3,10 +3,15 @@
 import Image from "next/image";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { ArrowIcon, CloseIcon, HeartIcon, SearchIcon } from "@/components/icons";
-import { dogs, type Dog } from "@/data/dogs";
+import { getDogImageUrl } from "@/lib/dog-images";
+import type { Tables } from "@/types/database";
 
 type Filter = "todos" | "peque" | "median" | "grande";
-type SelectedDog = Dog & { id: number };
+type Dog = Tables<"dogs">;
+
+type DogCatalogProps = {
+  dogs: Dog[];
+};
 
 const filters: { value: Filter; label: string }[] = [
   { value: "todos", label: "Todos" },
@@ -19,12 +24,12 @@ function normalize(value: string) {
   return value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
 }
 
-export function DogCatalog() {
+export function DogCatalog({ dogs }: DogCatalogProps) {
   const [search, setSearch] = useState("");
   const [activeFilter, setActiveFilter] = useState<Filter>("todos");
   const [visibleCount, setVisibleCount] = useState(9);
   const [favorites, setFavorites] = useState<Set<number>>(() => new Set());
-  const [selectedDog, setSelectedDog] = useState<SelectedDog | null>(null);
+  const [selectedDog, setSelectedDog] = useState<Dog | null>(null);
   const [toast, setToast] = useState("");
   const lastFocusedElement = useRef<HTMLElement | null>(null);
   const closeButton = useRef<HTMLButtonElement>(null);
@@ -32,14 +37,12 @@ export function DogCatalog() {
 
   const filteredDogs = useMemo(() => {
     const term = normalize(search.trim());
-    return dogs
-      .map((dog, id) => ({ ...dog, id }))
-      .filter((dog) => {
-        const matchesSearch = normalize(dog.name).includes(term);
-        const matchesSize = activeFilter === "todos" || normalize(dog.size).includes(activeFilter);
-        return matchesSearch && matchesSize;
-      });
-  }, [activeFilter, search]);
+    return dogs.filter((dog) => {
+      const matchesSearch = normalize(dog.name).includes(term);
+      const matchesSize = activeFilter === "todos" || normalize(dog.size).includes(activeFilter);
+      return matchesSearch && matchesSize;
+    });
+  }, [activeFilter, dogs, search]);
 
   useEffect(() => {
     if (!selectedDog) return;
@@ -69,7 +72,9 @@ export function DogCatalog() {
   };
 
   const toggleFavorite = (id: number) => {
-    const dog = dogs[id];
+    const dog = dogs.find((item) => item.id === id);
+    if (!dog) return;
+
     setFavorites((current) => {
       const next = new Set(current);
       if (next.has(id)) {
@@ -83,12 +88,13 @@ export function DogCatalog() {
     });
   };
 
-  const openDog = (dog: SelectedDog, trigger: HTMLElement) => {
+  const openDog = (dog: Dog, trigger: HTMLElement) => {
     lastFocusedElement.current = trigger;
     setSelectedDog(dog);
   };
 
   const shownDogs = filteredDogs.slice(0, visibleCount);
+  const selectedImageUrl = selectedDog ? getDogImageUrl(selectedDog.image_path) : null;
 
   return (
     <section className="catalog-section" id="adopta">
@@ -139,12 +145,17 @@ export function DogCatalog() {
           <div className="dogs-grid">
             {shownDogs.map((dog, index) => {
               const favorite = favorites.has(dog.id);
+              const imageUrl = getDogImageUrl(dog.image_path);
               return (
-                <article className="dog-card revealed" key={`${dog.name}-${dog.id}`} style={{ animationDelay: `${Math.min(index * 35, 280)}ms` }}>
+                <article className="dog-card revealed" key={dog.id} style={{ animationDelay: `${Math.min(index * 35, 280)}ms` }}>
                   <div className="dog-photo-wrap">
                     <button className="dog-photo-trigger" type="button" aria-label={`Ver ficha de ${dog.name}`} onClick={(event) => openDog(dog, event.currentTarget)}>
-                      <Image className="dog-photo" src="/dog.png" alt={`Foto provisional de ${dog.name}, perro en adopción`} fill sizes="(max-width: 620px) calc(100vw - 28px), (max-width: 1050px) 50vw, 380px" />
-                      <span className="status-pill">En adopción</span>
+                      {imageUrl ? (
+                        <Image className="dog-photo" src={imageUrl} alt={`Foto de ${dog.name}, perro en adopción`} fill sizes="(max-width: 620px) calc(100vw - 28px), (max-width: 1050px) 50vw, 380px" />
+                      ) : (
+                        <span className="dog-photo-placeholder"><span>Foto pendiente</span><small>Pronto conocerás su carita</small></span>
+                      )}
+                      <span className="status-pill">Busca hogar</span>
                     </button>
                     <button
                       className={`favorite-button${favorite ? " active" : ""}`}
@@ -189,12 +200,16 @@ export function DogCatalog() {
           <div className="modal-dialog" role="document">
             <button ref={closeButton} className="modal-close" type="button" onClick={() => setSelectedDog(null)} aria-label="Cerrar ficha"><CloseIcon /></button>
             <div className="modal-image-wrap">
-              <Image className="modal-image" src="/dog.png" alt={`Foto provisional de ${selectedDog.name}`} fill sizes="(max-width: 620px) calc(100vw - 20px), 390px" />
+              {selectedImageUrl ? (
+                <Image className="modal-image" src={selectedImageUrl} alt={`Foto de ${selectedDog.name}`} fill sizes="(max-width: 620px) calc(100vw - 20px), 390px" />
+              ) : (
+                <div className="dog-photo-placeholder modal-placeholder"><span>Foto pendiente</span><small>La fundación actualizará esta imagen</small></div>
+              )}
             </div>
             <div className="modal-content">
               <p className="eyebrow">Busca un hogar</p>
               <h2 id="modalName">{selectedDog.name}</h2>
-              <p className="modal-description">Tiene mucho amor para dar y está esperando una familia comprometida para toda la vida.</p>
+              <p className="modal-description">{selectedDog.description || "Pronto agregaremos más información sobre su historia y personalidad."}</p>
               <div className="modal-facts">
                 <div className="modal-fact"><strong>Edad</strong><span>{selectedDog.age}</span></div>
                 <div className="modal-fact"><strong>Tamaño</strong><span>{selectedDog.size}</span></div>

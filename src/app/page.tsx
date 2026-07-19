@@ -3,8 +3,21 @@ import { DogCatalog } from "@/components/dog-catalog";
 import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
 import { ArrowIcon, ChatIcon, EmailIcon, FacebookIcon, HeartIcon, InstagramIcon, PhoneIcon, PinIcon, SearchIcon, TikTokIcon } from "@/components/icons";
+import { createClient } from "@/lib/supabase/server";
 
-export default function Home() {
+export const dynamic = "force-dynamic";
+
+export default async function Home() {
+  const supabase = await createClient();
+  const { data: dogs, error } = await supabase
+    .from("dogs")
+    .select("*")
+    .order("id", { ascending: true });
+
+  if (error) {
+    throw new Error("No fue posible cargar los perros en adopción.");
+  }
+
   return (
     <>
       <a className="skip-link" href="#main">Saltar al contenido</a>
@@ -38,20 +51,20 @@ export default function Home() {
                 sizes="(max-width: 820px) 660px, 730px"
                 style={{ height: "auto" }}
               />
-              <div className="hero-badge"><div><strong>51</strong><span>corazones esperando</span></div></div>
+              <div className="hero-badge"><div><strong>{dogs.length}</strong><span>corazones esperando</span></div></div>
             </div>
           </div>
         </section>
 
         <div className="container stats-wrap" aria-label="Cifras de adopción">
           <div className="stats">
-            <div className="stat"><strong>51</strong><span>Perritos publicados</span></div>
+            <div className="stat"><strong>{dogs.length}</strong><span>Perritos publicados</span></div>
             <div className="stat"><strong>100%</strong><span>Esterilizados o castrados</span></div>
             <div className="stat"><strong>Paipa</strong><span>Boyacá, Colombia</span></div>
           </div>
         </div>
 
-        <DogCatalog />
+        <DogCatalog dogs={dogs} />
 
         <section className="process-section" id="proceso">
           <div className="container">
