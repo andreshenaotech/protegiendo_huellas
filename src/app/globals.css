@@ -1908,8 +1908,10 @@ a.contact-link:hover {
   }
 
   .hero-dog {
-    bottom: -145px;
-    width: 725px;
+    right: 50%;
+    bottom: -125px;
+    width: 650px;
+    transform: translateX(50%);
   }
 
   .hero-badge {
