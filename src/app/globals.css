@@ -1875,6 +1875,13 @@ a.contact-link:hover {
   .contact-card {
     padding: 48px;
   }
+
+  /* La columna de datos exige 420px; por debajo de este ancho el título no cabe. */
+  .donation-card {
+    gap: 40px;
+    padding: 48px;
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (max-width: 820px) {
@@ -2747,6 +2754,7 @@ a.contact-link:hover {
 
 .admin-row-actions {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 7px;
 }
@@ -3207,6 +3215,16 @@ a.contact-link:hover {
 .reveal-ready [data-reveal].is-visible {
   opacity: 1;
   transform: none;
+}
+
+/* Mientras el margen lateral de la página sea menor que el desplazamiento (28px),
+   mover bloques de ancho completo hacia los lados los saca del viewport y permite
+   mover la página horizontalmente. */
+@media (max-width: 1240px) {
+  .reveal-ready [data-reveal="left"]:not(.is-visible),
+  .reveal-ready [data-reveal="right"]:not(.is-visible) {
+    transform: translateY(24px);
+  }
 }
 
 /* Microinteracciones de historia y donaciones */

@@ -6,6 +6,7 @@ import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
 import { ArrowIcon, BowlIcon, ChatIcon, HeartIcon, PhoneIcon, PillIcon, SearchIcon, StethoscopeIcon, SyringeIcon } from "@/components/icons";
 import { ScrollReveals } from "@/components/scroll-reveals";
+import { SocialSection } from "@/components/social-section";
 
 export const metadata: Metadata = {
   title: "Apadrinamiento | Protegiendo Huellas",
@@ -404,6 +405,8 @@ export default function SponsorshipPage() {
             </div>
           </div>
         </section>
+
+        <SocialSection />
       </main>
 
       <Footer />
