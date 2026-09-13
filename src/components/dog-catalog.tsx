@@ -10,11 +10,12 @@ import {
   useRef,
   useState,
 } from "react";
-import { ArrowIcon, ChatIcon, CloseIcon, FacebookIcon, HeartIcon, InstagramIcon, SearchIcon, TikTokIcon } from "@/components/icons";
+import { ArrowIcon, CloseIcon, HeartIcon, SearchIcon } from "@/components/icons";
 import { deleteDog as deleteDogAction } from "@/lib/dog-actions";
 import { DEFAULT_DOG_DESCRIPTION, DOG_FIELD_LIMITS, type Dog, type DogValues, isAdopted } from "@/lib/dog-content";
 import { submitDog, validateDogImageFile } from "@/lib/dog-editor";
 import { getDogImageUrl } from "@/lib/dog-images";
+import { readStoredFavorites, storeFavorites } from "@/lib/favorites";
 import { createClient } from "@/lib/supabase/client";
 
 type Filter = "todos" | "peque" | "median" | "grande" | "favoritos";
@@ -28,29 +29,10 @@ type DogCatalogProps = {
 
 const PREVIEW_COUNT = 6;
 const PAGE_SIZE = 9;
+const FAVORITES_QUERY = "filtro=favoritos";
 // Adoptados: una hilera al inicio y dos hileras más por cada "Ver más".
 const ADOPTED_INITIAL_COUNT = 3;
 const ADOPTED_PAGE_SIZE = 6;
-const FAVORITES_STORAGE_KEY = "protegiendo-huellas:favoritos";
-const FAVORITES_QUERY = "filtro=favoritos";
-
-// Los favoritos viven solo en el navegador del visitante (sin cuentas).
-function readStoredFavorites() {
-  try {
-    const parsed: unknown = JSON.parse(window.localStorage.getItem(FAVORITES_STORAGE_KEY) ?? "[]");
-    return new Set(Array.isArray(parsed) ? parsed.filter((id): id is number => Number.isInteger(id)) : []);
-  } catch {
-    return new Set<number>();
-  }
-}
-
-function storeFavorites(favorites: Set<number>) {
-  try {
-    window.localStorage.setItem(FAVORITES_STORAGE_KEY, JSON.stringify([...favorites]));
-  } catch {
-    // Almacenamiento bloqueado (modo privado, cuota): los favoritos duran la visita.
-  }
-}
 
 type EditForm = DogValues;
 
@@ -80,7 +62,6 @@ export function DogCatalog({ dogs: initialDogs, variant }: DogCatalogProps) {
   const [adoptedVisibleCount, setAdoptedVisibleCount] = useState(ADOPTED_INITIAL_COUNT);
   const [favorites, setFavorites] = useState<Set<number>>(() => new Set());
   const [selectedDog, setSelectedDog] = useState<Dog | null>(null);
-  const [showAdoptionContact, setShowAdoptionContact] = useState(false);
   const [editingDog, setEditingDog] = useState<Dog | null>(null);
   const [editForm, setEditForm] = useState<EditForm>({ name: "", description: "", age: "", size: "", status: "" });
   const [editImageFile, setEditImageFile] = useState<File | null>(null);
@@ -194,7 +175,6 @@ export function DogCatalog({ dogs: initialDogs, variant }: DogCatalogProps) {
 
   const openDog = (dog: Dog, trigger: HTMLElement) => {
     lastFocusedElement.current = trigger;
-    setShowAdoptionContact(false);
     setSelectedDog(dog);
   };
 
@@ -354,9 +334,6 @@ export function DogCatalog({ dogs: initialDogs, variant }: DogCatalogProps) {
   const shownAdoptedDogs = adoptedDogs.slice(0, adoptedVisibleCount);
   const selectedImageUrl = selectedDog ? getDogImageUrl(selectedDog.image_path) : null;
   const editingImageUrl = editingDog ? getDogImageUrl(editingDog.image_path) : null;
-  const whatsappMessage = selectedDog
-    ? `Hola Yazmid, quiero recibir información sobre el proceso de adopción de ${selectedDog.name}.`
-    : "";
 
   return (
     <section className={`catalog-section${isPreview ? " catalog-preview" : ""}`} id="adopta">
@@ -513,7 +490,7 @@ export function DogCatalog({ dogs: initialDogs, variant }: DogCatalogProps) {
                 <div className="dog-photo-placeholder modal-placeholder"><span>Foto pendiente</span><small>La fundación actualizará esta imagen</small></div>
               )}
             </div>
-            <div className={`modal-content${showAdoptionContact ? " adoption-contact-view" : ""}`}>
+            <div className="modal-content">
               {isAdopted(selectedDog) ? (
                 <>
                   <p className="eyebrow">Ya tiene un hogar</p>
@@ -526,7 +503,7 @@ export function DogCatalog({ dogs: initialDogs, variant }: DogCatalogProps) {
                   </div>
                   <p className="modal-adopted-note"><strong>{selectedDog.name} ya encontró una familia.</strong> Todavía hay muchos perritos esperando su oportunidad.</p>
                 </>
-              ) : !showAdoptionContact ? (
+              ) : (
                 <>
                   <p className="eyebrow">Busca un hogar</p>
                   <h2 id="modalName">{selectedDog.name}</h2>
@@ -536,33 +513,9 @@ export function DogCatalog({ dogs: initialDogs, variant }: DogCatalogProps) {
                     <div className="modal-fact"><strong>Tamaño</strong><span>{selectedDog.size}</span></div>
                     <div className="modal-fact modal-fact-wide"><strong>Estado</strong><span>{selectedDog.status}</span></div>
                   </div>
-                  <button className="btn btn-primary" type="button" onClick={() => setShowAdoptionContact(true)}>Quiero adoptar</button>
+                  {/* La solicitud llega con este perrito ya seleccionado. */}
+                  <Link className="btn btn-primary" href={`/adopciones/solicitud?perrito=${selectedDog.id}`}>Quiero adoptar <ArrowIcon /></Link>
                 </>
-              ) : (
-                <div className="adoption-contact-content">
-                  <p className="eyebrow">El primer paso hacia su hogar</p>
-                  <h2 id="modalName">¿Quieres conocer a {selectedDog.name}?</h2>
-                  <p className="modal-description">Escríbele por WhatsApp a <strong>Yazmid Navarro</strong>, directora de la fundación. Menciona que te interesa adoptar a <strong>{selectedDog.name}</strong> y ella te orientará personalmente sobre los siguientes pasos.</p>
-                  <a
-                    className="adoption-whatsapp-card"
-                    href={`https://wa.me/573227464595?text=${encodeURIComponent(whatsappMessage)}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <span className="adoption-whatsapp-icon"><ChatIcon /></span>
-                    <span><small>WhatsApp de la fundación</small><strong>322 746 4595</strong><small>Yazmid Navarro · Directora</small></span>
-                    <ArrowIcon />
-                  </a>
-                  <div className="adoption-socials">
-                    <p>O contáctanos por nuestras redes sociales</p>
-                    <div>
-                      <a href="https://www.facebook.com/fundacion.protegiendo.huellas.2025" target="_blank" rel="noopener noreferrer" aria-label="Contactar por Facebook"><FacebookIcon /></a>
-                      <a href="https://www.instagram.com/protegiendo_huellas/" target="_blank" rel="noopener noreferrer" aria-label="Contactar por Instagram"><InstagramIcon /></a>
-                      <a href="https://www.tiktok.com/@protegiendo.huellas?_r=1&_t=ZS-989SSm8VsZj" target="_blank" rel="noopener noreferrer" aria-label="Contactar por TikTok"><TikTokIcon /></a>
-                    </div>
-                  </div>
-                  <button className="adoption-back" type="button" onClick={() => setShowAdoptionContact(false)}>Volver a la información de {selectedDog.name}</button>
-                </div>
               )}
             </div>
           </div>

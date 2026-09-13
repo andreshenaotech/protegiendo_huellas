@@ -1,5 +1,6 @@
 import Image from "next/image";
-import { DogCatalog } from "@/components/dog-catalog";
+import { DogPreviewSection } from "@/components/dog-preview-section";
+import { EventsIntroSection } from "@/components/events-intro-section";
 import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
 import { ArrowIcon, ChatIcon, EmailIcon, FacebookIcon, HeartIcon, PhoneIcon, PinIcon, SearchIcon } from "@/components/icons";
@@ -62,7 +63,7 @@ export default async function Home() {
           </div>
         </div>
 
-        <DogCatalog dogs={dogs} variant="preview" />
+        <DogPreviewSection />
 
         <section className="process-section" id="proceso">
           <div className="container">
@@ -160,6 +161,8 @@ export default async function Home() {
         </section>
 
         <SocialSection />
+
+        <EventsIntroSection />
 
         <section className="contact-section" id="contacto">
           <div className="container">

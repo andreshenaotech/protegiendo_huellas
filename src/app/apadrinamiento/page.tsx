@@ -1,19 +1,18 @@
 import type { Metadata } from "next";
-import type { ReactNode } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Footer } from "@/components/footer";
+import { type Faq, FaqSection } from "@/components/faq-section";
 import { Header } from "@/components/header";
 import { ArrowIcon, BowlIcon, ChatIcon, HeartIcon, PhoneIcon, PillIcon, SearchIcon, StethoscopeIcon, SyringeIcon } from "@/components/icons";
 import { ScrollReveals } from "@/components/scroll-reveals";
 import { SocialSection } from "@/components/social-section";
+import { whatsappUrl } from "@/lib/contact";
 
 export const metadata: Metadata = {
   title: "Apadrinamiento | Protegiendo Huellas",
   description: "Apadrina a un perrito de la Fundación Protegiendo Huellas con un aporte mensual desde $500 al día, o ayúdanos a recibir a un animal rescatado.",
 };
-
-const WHATSAPP_NUMBER = "573227464595";
 
 const money = new Intl.NumberFormat("es-CO");
 
@@ -46,7 +45,7 @@ const benefits = [
   "Un lugar en nuestra comunidad, con menciones y agradecimientos en redes.",
 ];
 
-const faqs: { question: string; answer: ReactNode }[] = [
+const faqs: Faq[] = [
   {
     question: "¿Qué es apadrinar?",
     answer: "Es apoyar a un animal del refugio con un aporte mensual, sin llevártelo a casa. Sigue viviendo con nosotros, cuidado y protegido, y tú acompañas su historia de cerca.",
@@ -113,11 +112,11 @@ const faqs: { question: string; answer: ReactNode }[] = [
   },
 ];
 
-const INTAKE_WHATSAPP_URL = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent("Hola, vi un animal que necesita ayuda y quiero ingresarlo a la fundación como Padrino de Ingreso.")}`;
+const INTAKE_WHATSAPP_URL = whatsappUrl("Hola, vi un animal que necesita ayuda y quiero ingresarlo a la fundación como Padrino de Ingreso.");
 
 function planWhatsappUrl(plan: (typeof plans)[number]) {
   const message = `Hola, quiero ser Padrino Solidario con el plan ${plan.name} ($${money.format(plan.monthly)} al mes).`;
-  return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
+  return whatsappUrl(message);
 }
 
 export default function SponsorshipPage() {
@@ -385,26 +384,7 @@ export default function SponsorshipPage() {
           </div>
         </section>
 
-        <section className="sponsor-faq-section" id="preguntas-frecuentes">
-          <div className="container">
-            <div data-reveal="up">
-              <p className="eyebrow">Apadrinamiento</p>
-              <h2 className="section-title">Preguntas frecuentes</h2>
-            </div>
-
-            {/* <details> despliega cada respuesta sin JavaScript y es accesible con teclado. */}
-            <div className="sponsor-faq" data-reveal="up">
-              {faqs.map((faq) => (
-                <details key={faq.question}>
-                  <summary>{faq.question}</summary>
-                  <div className="sponsor-faq-answer">
-                    <p>{faq.answer}</p>
-                  </div>
-                </details>
-              ))}
-            </div>
-          </div>
-        </section>
+        <FaqSection eyebrow="Apadrinamiento" faqs={faqs} />
 
         <SocialSection />
       </main>

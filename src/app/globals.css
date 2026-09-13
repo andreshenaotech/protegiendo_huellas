@@ -1833,6 +1833,46 @@ a.contact-link:hover {
   transform: translateY(0);
 }
 
+/* Con seis enlaces el menú no cabe en una fila por debajo de este ancho. */
+@media (max-width: 1100px) {
+  .menu-button {
+    display: grid;
+    place-items: center;
+  }
+
+  .nav-links {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 20px;
+    left: 20px;
+    display: grid;
+    gap: 4px;
+    padding: 15px;
+    background: white;
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    box-shadow: var(--shadow-lg);
+    opacity: 0;
+    transform: translateY(-10px);
+    pointer-events: none;
+    transition: opacity 180ms ease, transform 180ms ease;
+  }
+
+  .nav-links.open {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+
+  .nav-links a:not(.btn) {
+    padding: 11px 12px;
+  }
+
+  .nav-links a:not(.btn)::after {
+    display: none;
+  }
+}
+
 @media (max-width: 1050px) {
   .hero {
     min-height: auto;
@@ -1885,43 +1925,6 @@ a.contact-link:hover {
 }
 
 @media (max-width: 820px) {
-  .menu-button {
-    display: grid;
-    place-items: center;
-  }
-
-  .nav-links {
-    position: absolute;
-    top: calc(100% + 8px);
-    right: 20px;
-    left: 20px;
-    display: grid;
-    gap: 4px;
-    padding: 15px;
-    background: white;
-    border: 1px solid var(--line);
-    border-radius: 20px;
-    box-shadow: var(--shadow-lg);
-    opacity: 0;
-    transform: translateY(-10px);
-    pointer-events: none;
-    transition: opacity 180ms ease, transform 180ms ease;
-  }
-
-  .nav-links.open {
-    opacity: 1;
-    transform: translateY(0);
-    pointer-events: auto;
-  }
-
-  .nav-links a:not(.btn) {
-    padding: 11px 12px;
-  }
-
-  .nav-links a:not(.btn)::after {
-    display: none;
-  }
-
   .hero {
     padding-top: 135px;
   }
@@ -3268,145 +3271,9 @@ a.contact-link:hover {
   transform: translateY(-3px) scale(1.018);
 }
 
-/* Segunda vista del modal para iniciar una adopción */
-.adoption-contact-content {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-
-.adoption-contact-view h2 {
-  font-size: clamp(1.85rem, 3.4vw, 2.85rem);
-  line-height: 1.02;
-  text-transform: none;
-}
-
-.adoption-contact-view .modal-description {
-  margin: 16px 0;
-  font-size: 0.9rem;
-}
-
-.adoption-contact-view .modal-description strong {
-  color: var(--green-deep);
-}
-
-.adoption-whatsapp-card {
-  display: grid;
-  align-items: center;
-  gap: 12px;
-  padding: 14px;
-  color: white;
-  background: var(--green-dark);
-  border-radius: 15px;
-  box-shadow: 0 12px 25px rgba(23, 59, 42, 0.16);
-  grid-template-columns: auto minmax(0, 1fr) auto;
-  transition: transform 180ms ease, background 180ms ease;
-}
-
-.adoption-whatsapp-card:hover {
-  background: var(--green-deep);
-  transform: translateY(-2px);
-}
-
-.adoption-whatsapp-card > span:nth-child(2) {
-  display: grid;
-  min-width: 0;
-  line-height: 1.25;
-}
-
-.adoption-whatsapp-card small {
-  color: rgba(255, 255, 255, 0.7);
-  font-size: 0.64rem;
-}
-
-.adoption-whatsapp-card strong {
-  font-size: 1.15rem;
-  letter-spacing: 0.02em;
-}
-
-.adoption-whatsapp-icon {
-  display: grid;
-  width: 40px;
-  height: 40px;
-  place-items: center;
-  color: var(--green-deep);
-  background: var(--lime);
-  border-radius: 50%;
-}
-
-.adoption-whatsapp-icon .icon,
-.adoption-whatsapp-card > .icon {
-  width: 19px;
-  height: 19px;
-}
-
-.adoption-socials {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 14px;
-  margin-top: 17px;
-  padding-top: 15px;
-  border-top: 1px solid var(--line);
-}
-
-.adoption-socials p {
-  margin: 0;
-  color: var(--muted);
-  font-size: 0.72rem;
-}
-
-.adoption-socials > div {
-  display: flex;
-  flex: 0 0 auto;
-  gap: 7px;
-}
-
-.adoption-socials a {
-  display: grid;
-  width: 34px;
-  height: 34px;
-  place-items: center;
-  color: white;
-  background: var(--green);
-  border-radius: 50%;
-  transition: transform 160ms ease, background 160ms ease;
-}
-
-.adoption-socials a:hover {
-  background: var(--green-dark);
-  transform: translateY(-2px);
-}
-
-.adoption-socials .icon {
-  width: 17px;
-  height: 17px;
-}
-
-.adoption-back {
-  align-self: flex-start;
-  margin-top: 14px;
-  cursor: pointer;
-  color: var(--green-dark);
-  background: transparent;
-  font-size: 0.69rem;
-  font-weight: 900;
-  text-decoration: underline;
-  text-underline-offset: 3px;
-}
-
 @media (max-width: 620px) {
   .donation-details {
     padding: 0;
-  }
-
-  .adoption-contact-view {
-    padding-top: 27px;
-  }
-
-  .adoption-socials {
-    align-items: flex-start;
-    flex-direction: column;
   }
 }
 
@@ -3421,6 +3288,11 @@ a.contact-link:hover {
 .sponsor-hero {
   min-height: auto;
   padding-bottom: 110px;
+}
+
+/* Palabras largas como "voluntario" no caben en la columna con el tamaño de la landing. */
+.sponsor-hero h1 {
+  font-size: clamp(3rem, 6.2vw, 6rem);
 }
 
 .sponsor-hero-visual {
@@ -3937,36 +3809,36 @@ a.contact-link:hover {
   font-size: 1.1rem;
 }
 
-.sponsor-faq-section {
+.faq-section {
   padding: 110px 0;
   background: var(--paper);
 }
 
-.sponsor-faq {
+.faq-list {
   display: grid;
   gap: 12px;
   max-width: 900px;
   margin-top: 44px;
 }
 
-.sponsor-faq details {
+.faq-list details {
   background: var(--cream);
   border: 1px solid var(--line);
   border-radius: var(--radius-md);
   transition: background 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
 }
 
-.sponsor-faq details:hover {
+.faq-list details:hover {
   border-color: rgba(121, 184, 50, 0.45);
 }
 
-.sponsor-faq details[open] {
+.faq-list details[open] {
   background: white;
   border-color: var(--green);
   box-shadow: var(--shadow-sm);
 }
 
-.sponsor-faq summary {
+.faq-list summary {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -3980,11 +3852,11 @@ a.contact-link:hover {
   list-style: none;
 }
 
-.sponsor-faq summary::-webkit-details-marker {
+.faq-list summary::-webkit-details-marker {
   display: none;
 }
 
-.sponsor-faq summary::after {
+.faq-list summary::after {
   display: grid;
   width: 34px;
   height: 34px;
@@ -4000,28 +3872,28 @@ a.contact-link:hover {
   transition: transform 200ms ease, background 200ms ease, color 200ms ease;
 }
 
-.sponsor-faq details[open] summary::after {
+.faq-list details[open] summary::after {
   color: white;
   background: var(--green);
   transform: rotate(45deg);
 }
 
-.sponsor-faq summary:focus-visible {
+.faq-list summary:focus-visible {
   outline: 3px solid var(--green);
   outline-offset: 3px;
   border-radius: var(--radius-md);
 }
 
-.sponsor-faq-answer {
+.faq-answer {
   padding: 0 24px 22px;
 }
 
-.sponsor-faq-answer p {
+.faq-answer p {
   margin: 0;
   color: var(--muted);
 }
 
-.sponsor-faq-answer a {
+.faq-answer a {
   color: var(--green-dark);
   font-weight: 800;
   text-decoration: underline;
@@ -4029,11 +3901,6 @@ a.contact-link:hover {
 }
 
 @media (max-width: 1050px) {
-  .nav-links {
-    gap: 18px;
-    font-size: 0.86rem;
-  }
-
   .sponsor-steps {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -4167,16 +4034,16 @@ a.contact-link:hover {
   .sponsor-benefits-section,
   .sponsor-plans-section,
   .sponsor-intake-section,
-  .sponsor-faq-section {
+  .faq-section {
     padding: 80px 0;
   }
 
-  .sponsor-faq summary {
+  .faq-list summary {
     padding: 18px;
     font-size: 0.98rem;
   }
 
-  .sponsor-faq-answer {
+  .faq-answer {
     padding: 0 18px 18px;
   }
 
@@ -4191,5 +4058,1199 @@ a.contact-link:hover {
 
   .sponsor-sterilization {
     padding: 28px;
+  }
+}
+
+/* Página /adopciones: portada sin foto, recomendaciones y línea de tiempo */
+.adoption-hero {
+  padding: 150px 0 100px;
+  background: linear-gradient(180deg, #fbfaf4 0%, var(--green-light) 100%);
+}
+
+.adoption-hero-grid {
+  display: grid;
+  align-items: center;
+  gap: 64px;
+  grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+}
+
+.adoption-hero h1 {
+  margin: 0;
+  color: var(--green-deep);
+  font-size: clamp(3rem, 6vw, 5.6rem);
+  line-height: 0.92;
+  letter-spacing: -0.06em;
+}
+
+.adoption-hero h1 .highlight {
+  color: var(--green);
+}
+
+.adoption-hero-photo {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1.05;
+  overflow: hidden;
+  background: var(--green-light);
+  border: 10px solid white;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+}
+
+.adoption-hero-photo img {
+  object-fit: cover;
+  object-position: center 35%;
+}
+
+.adoption-recommendations-section {
+  padding: 100px 0;
+  background: var(--paper);
+}
+
+/* Recomendaciones como texto: puntos 1 y 2 en una columna, 3 y 4 en la otra. */
+.adoption-recommendations {
+  display: grid;
+  gap: 28px 64px;
+  margin: 44px 0 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: recommendation;
+  grid-auto-flow: column;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-rows: repeat(2, auto);
+}
+
+.adoption-recommendations li {
+  display: grid;
+  align-items: start;
+  gap: 16px;
+  color: var(--muted);
+  font-size: 1.05rem;
+  counter-increment: recommendation;
+  grid-template-columns: 42px minmax(0, 1fr);
+}
+
+.adoption-recommendations li::before {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+  content: counter(recommendation);
+  color: var(--green-deep);
+  background: var(--lime);
+  border-radius: 50%;
+  font-size: 1.1rem;
+  font-weight: 900;
+}
+
+.adoption-steps-section {
+  padding: 110px 0;
+  background: var(--paper);
+}
+
+.adoption-steps-layout {
+  display: grid;
+  align-items: start;
+  gap: 64px;
+  grid-template-columns: minmax(0, 0.75fr) minmax(0, 1.25fr);
+}
+
+.adoption-steps-heading {
+  position: sticky;
+  top: 120px;
+}
+
+.adoption-steps-button {
+  margin-top: 28px;
+}
+
+.adoption-timeline {
+  position: relative;
+  display: grid;
+  gap: 22px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Línea vertical que une los pasos. */
+.adoption-timeline::before {
+  position: absolute;
+  top: 28px;
+  bottom: 28px;
+  left: 27px;
+  width: 2px;
+  content: "";
+  background: var(--line);
+}
+
+.adoption-step {
+  position: relative;
+  display: grid;
+  gap: 22px;
+  grid-template-columns: 56px minmax(0, 1fr);
+}
+
+.adoption-step-marker {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  width: 56px;
+  height: 56px;
+  place-items: center;
+  color: var(--lime);
+  background: var(--green-deep);
+  border: 5px solid white;
+  border-radius: 50%;
+  box-shadow: var(--shadow-sm);
+  font-size: 1.3rem;
+  font-weight: 900;
+}
+
+.adoption-step-marker .icon {
+  width: 22px;
+  height: 22px;
+  fill: currentColor;
+}
+
+.adoption-step-body {
+  min-width: 0;
+  padding: 28px 30px;
+  background: var(--cream);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+}
+
+.adoption-step-label {
+  margin: 0;
+  color: var(--green-dark);
+  font-size: 0.75rem;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.adoption-step-body h3 {
+  margin: 4px 0 14px;
+  color: var(--green-deep);
+  font-size: clamp(1.4rem, 2.4vw, 1.85rem);
+  line-height: 1.1;
+}
+
+.adoption-step-body > p:not(.adoption-step-label) {
+  margin: 0;
+  color: var(--muted);
+}
+
+.adoption-step-body .check-list {
+  margin: 0;
+}
+
+.adoption-questions {
+  display: grid;
+  gap: 10px 22px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.adoption-questions li {
+  position: relative;
+  padding-left: 18px;
+  color: var(--ink);
+  font-size: 0.95rem;
+}
+
+.adoption-questions li::before {
+  position: absolute;
+  top: 0.6em;
+  left: 0;
+  width: 7px;
+  height: 7px;
+  content: "";
+  background: var(--green);
+  border-radius: 50%;
+}
+
+.adoption-questions small {
+  color: var(--muted);
+}
+
+.adoption-step-note {
+  margin: 18px 0 0;
+  padding: 14px 18px;
+  color: var(--green-deep);
+  background: var(--green-light);
+  border-radius: var(--radius-sm);
+  font-weight: 700;
+}
+
+.adoption-support {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  margin: 56px 0 0;
+  padding: 22px 26px;
+  color: white;
+  background: var(--green-deep);
+  border-radius: var(--radius-md);
+  font-size: 1.05rem;
+  text-align: center;
+}
+
+.adoption-support .icon {
+  flex: 0 0 auto;
+  width: 26px;
+  height: 26px;
+  color: var(--lime);
+  fill: currentColor;
+}
+
+.adoption-meet-section {
+  padding: 0 0 110px;
+  background: var(--paper);
+}
+
+.adoption-meet {
+  display: grid;
+  align-items: stretch;
+  overflow: hidden;
+  background: var(--green-light);
+  border-radius: var(--radius-lg);
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+}
+
+.adoption-meet-photo {
+  position: relative;
+  min-height: 360px;
+}
+
+.adoption-meet-photo img {
+  object-fit: cover;
+  object-position: center 35%;
+}
+
+.adoption-meet-copy {
+  align-self: center;
+  padding: 48px;
+}
+
+.adoption-meet-copy h2 {
+  margin: 0;
+  color: var(--green-deep);
+  font-size: clamp(1.9rem, 3.6vw, 3rem);
+  line-height: 1.02;
+  letter-spacing: -0.04em;
+}
+
+.adoption-meet-copy > p:not(.eyebrow) {
+  margin: 16px 0 26px;
+  color: var(--muted);
+  font-size: 1.05rem;
+}
+
+/* Página /adopciones/solicitud */
+.adoption-request-page {
+  padding: 140px 0 110px;
+  background: linear-gradient(180deg, var(--green-light) 0, var(--cream) 420px);
+}
+
+.adoption-request-heading {
+  max-width: 760px;
+}
+
+.adoption-back-link {
+  display: inline-block;
+  margin-bottom: 22px;
+  color: var(--green-dark);
+  font-weight: 800;
+}
+
+.adoption-request-heading h1 {
+  margin: 0;
+  color: var(--green-deep);
+  font-size: clamp(2.3rem, 5vw, 4rem);
+  line-height: 1;
+  letter-spacing: -0.05em;
+}
+
+.adoption-request-heading > p:not(.eyebrow) {
+  margin: 18px 0 0;
+  color: var(--muted);
+  font-size: 1.05rem;
+}
+
+.adoption-request-layout {
+  display: grid;
+  align-items: start;
+  gap: 32px;
+  margin-top: 44px;
+  grid-template-columns: minmax(0, 1fr) 320px;
+}
+
+.adoption-form {
+  display: grid;
+  gap: 24px;
+}
+
+.adoption-fieldset {
+  min-width: 0;
+  margin: 0;
+  padding: 32px;
+  background: white;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+.adoption-fieldset > legend {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  float: left;
+  width: 100%;
+  margin-bottom: 22px;
+  padding: 0;
+  color: var(--green-deep);
+  font-size: clamp(1.35rem, 2.4vw, 1.7rem);
+  font-weight: 900;
+  line-height: 1.15;
+}
+
+.adoption-fieldset > legend span {
+  flex: 0 0 auto;
+  padding: 5px 12px;
+  color: white;
+  background: var(--green);
+  border-radius: 999px;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.adoption-fieldset > legend + * {
+  clear: both;
+}
+
+.adoption-fieldset-copy {
+  margin: 0 0 18px;
+  color: var(--muted);
+}
+
+.adoption-field {
+  display: grid;
+  gap: 8px;
+  padding: 18px 0;
+  border-top: 1px solid var(--line);
+}
+
+.adoption-field > label,
+.adoption-choice legend {
+  padding: 0;
+  color: var(--ink);
+  font-weight: 800;
+}
+
+.adoption-field input:not([type="radio"]),
+.adoption-field textarea,
+.adoption-field select {
+  width: 100%;
+  min-height: 48px;
+  padding: 11px 14px;
+  color: var(--ink);
+  background: var(--cream);
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius-sm);
+  font: inherit;
+  transition: border-color 160ms ease, box-shadow 160ms ease;
+}
+
+.adoption-field textarea {
+  resize: vertical;
+}
+
+.adoption-field input:focus,
+.adoption-field textarea:focus,
+.adoption-field select:focus {
+  border-color: var(--green);
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(121, 184, 50, 0.18);
+}
+
+.adoption-field small {
+  color: var(--muted);
+}
+
+.adoption-choice {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.adoption-choice legend {
+  margin-bottom: 10px;
+}
+
+.adoption-choice > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.adoption-choice label {
+  position: relative;
+  cursor: pointer;
+}
+
+.adoption-choice input {
+  position: absolute;
+  opacity: 0;
+}
+
+.adoption-choice label span {
+  display: inline-block;
+  min-width: 88px;
+  padding: 10px 20px;
+  color: var(--green-deep);
+  text-align: center;
+  background: var(--cream);
+  border: 1.5px solid var(--line);
+  border-radius: 999px;
+  font-weight: 800;
+}
+
+.adoption-choice input:checked + span {
+  color: white;
+  background: var(--green-dark);
+  border-color: var(--green-dark);
+}
+
+.adoption-choice input:focus-visible + span {
+  box-shadow: 0 0 0 4px rgba(121, 184, 50, 0.3);
+}
+
+.adoption-commitments {
+  display: grid;
+  gap: 12px;
+}
+
+.adoption-commitment {
+  display: grid;
+  align-items: start;
+  gap: 12px;
+  padding: 14px 16px;
+  cursor: pointer;
+  background: var(--cream);
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius-sm);
+  grid-template-columns: 22px minmax(0, 1fr);
+}
+
+.adoption-commitment input {
+  width: 20px;
+  height: 20px;
+  margin: 2px 0 0;
+  accent-color: var(--green-dark);
+}
+
+.adoption-commitment:has(input:checked) {
+  background: var(--green-light);
+  border-color: var(--green);
+}
+
+.adoption-field.has-error input,
+.adoption-field.has-error textarea,
+.adoption-field.has-error select,
+.adoption-field.has-error .adoption-choice label span,
+.adoption-fieldset.has-error .adoption-commitment:not(:has(input:checked)) {
+  border-color: #d06b5f;
+}
+
+.adoption-error {
+  margin: 0;
+  color: #a33b30;
+  font-size: 0.88rem;
+  font-weight: 800;
+}
+
+.adoption-fieldset.has-error > .adoption-error {
+  margin-top: 12px;
+}
+
+.adoption-submit {
+  display: grid;
+  justify-items: start;
+  gap: 12px;
+}
+
+.adoption-submit small {
+  color: var(--muted);
+}
+
+.adoption-request-aside {
+  position: sticky;
+  top: 120px;
+  padding: 28px;
+  color: white;
+  background: var(--green-deep);
+  border-radius: var(--radius-lg);
+}
+
+.adoption-request-aside .eyebrow {
+  color: var(--lime);
+}
+
+.adoption-request-aside ol {
+  display: grid;
+  gap: 18px;
+  margin: 0;
+  padding-left: 20px;
+}
+
+.adoption-request-aside li::marker {
+  color: var(--lime);
+  font-weight: 900;
+}
+
+.adoption-request-aside strong,
+.adoption-request-aside span {
+  display: block;
+}
+
+.adoption-request-aside span {
+  margin-top: 4px;
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 0.92rem;
+}
+
+@media (max-width: 1050px) {
+  .adoption-hero-grid,
+  .adoption-steps-layout {
+    gap: 40px;
+  }
+
+  .adoption-request-layout {
+    grid-template-columns: minmax(0, 1fr) 280px;
+  }
+}
+
+@media (max-width: 820px) {
+  .adoption-hero {
+    padding-top: 130px;
+  }
+
+  .adoption-hero-grid,
+  .adoption-steps-layout,
+  .adoption-meet,
+  .adoption-request-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .adoption-steps-heading,
+  .adoption-request-aside {
+    position: static;
+  }
+
+  .adoption-meet-photo {
+    min-height: 280px;
+  }
+
+  .adoption-meet-copy {
+    padding: 36px;
+  }
+}
+
+@media (max-width: 620px) {
+  .adoption-hero {
+    padding-bottom: 80px;
+  }
+
+  .adoption-recommendations-section {
+    padding: 80px 0;
+  }
+
+  .adoption-recommendations {
+    grid-auto-flow: row;
+    grid-template-columns: 1fr;
+    grid-template-rows: none;
+  }
+
+  .adoption-hero-photo {
+    aspect-ratio: 4 / 3;
+  }
+
+  .adoption-steps-section {
+    padding: 80px 0;
+  }
+
+  .adoption-meet-section {
+    padding-bottom: 80px;
+  }
+
+  .adoption-timeline::before {
+    left: 19px;
+  }
+
+  .adoption-step {
+    gap: 12px;
+    grid-template-columns: 40px minmax(0, 1fr);
+  }
+
+  .adoption-step-marker {
+    width: 40px;
+    height: 40px;
+    border-width: 3px;
+    font-size: 1rem;
+  }
+
+  .adoption-step-body {
+    padding: 22px 20px;
+  }
+
+  .adoption-questions {
+    grid-template-columns: 1fr;
+  }
+
+  .adoption-support {
+    flex-direction: column;
+  }
+
+  .adoption-meet-copy {
+    padding: 28px;
+  }
+
+  .adoption-request-page {
+    padding-top: 120px;
+  }
+
+  .adoption-fieldset {
+    padding: 22px 20px;
+  }
+}
+
+/* Introducción a próximos eventos (landing y /voluntariado) */
+.events-intro-section {
+  padding: 110px 0;
+  background: var(--cream);
+}
+
+.events-intro-card {
+  position: relative;
+  display: grid;
+  align-items: center;
+  gap: 48px;
+  padding: 56px;
+  overflow: hidden;
+  color: white;
+  background: var(--green-deep);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.events-intro-card::before {
+  position: absolute;
+  right: -110px;
+  bottom: -140px;
+  width: 380px;
+  height: 380px;
+  content: "";
+  background: rgba(183, 219, 112, 0.08);
+  border: 60px solid rgba(183, 219, 112, 0.06);
+  border-radius: 50%;
+}
+
+.events-intro-copy,
+.events-intro-visual {
+  position: relative;
+  z-index: 1;
+}
+
+.events-intro-copy .eyebrow {
+  color: var(--lime);
+}
+
+.events-intro-copy h2 {
+  max-width: 640px;
+  margin: 0;
+  font-size: clamp(2.2rem, 4.4vw, 3.8rem);
+  line-height: 1;
+  letter-spacing: -0.05em;
+}
+
+.events-intro-copy > p:not(.eyebrow) {
+  max-width: 640px;
+  margin: 20px 0 0;
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 1.05rem;
+}
+
+.events-intro-types {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 26px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.events-intro-types li {
+  padding: 8px 14px;
+  color: var(--lime);
+  background: rgba(183, 219, 112, 0.1);
+  border: 1px solid rgba(183, 219, 112, 0.3);
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 800;
+}
+
+.events-intro-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px;
+  margin-top: 32px;
+}
+
+.events-intro-actions .btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+  transform: none;
+}
+
+.events-intro-soon {
+  padding: 6px 12px;
+  color: var(--green-deep);
+  background: var(--lime);
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.events-intro-icon {
+  display: grid;
+  width: 190px;
+  height: 190px;
+  place-items: center;
+  color: var(--green-deep);
+  background: var(--lime);
+  border-radius: 50%;
+  box-shadow: 0 0 0 18px rgba(183, 219, 112, 0.14);
+}
+
+.events-intro-icon .icon {
+  width: 78px;
+  height: 78px;
+  stroke-width: 1.6;
+}
+
+@media (max-width: 820px) {
+  .events-intro-card {
+    gap: 32px;
+    padding: 40px;
+    grid-template-columns: 1fr;
+  }
+
+  .events-intro-visual {
+    order: -1;
+  }
+
+  .events-intro-icon {
+    width: 110px;
+    height: 110px;
+    box-shadow: 0 0 0 12px rgba(183, 219, 112, 0.14);
+  }
+
+  .events-intro-icon .icon {
+    width: 46px;
+    height: 46px;
+  }
+}
+
+@media (max-width: 620px) {
+  .events-intro-section {
+    padding: 80px 0;
+  }
+
+  .events-intro-card {
+    padding: 28px;
+  }
+}
+
+/* Página /voluntariado (reutiliza los bloques .sponsor-* de /apadrinamiento) */
+.volunteer-roles-section {
+  padding: 110px 0;
+  background: var(--green-light);
+}
+
+/* Tres tarjetas arriba y dos más anchas abajo. */
+.volunteer-roles {
+  display: grid;
+  gap: 18px;
+  margin-top: 44px;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+}
+
+.volunteer-role {
+  grid-column: span 2;
+  padding: 30px;
+  background: white;
+  border: 1px solid rgba(49, 91, 38, 0.1);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  transition: transform 220ms ease, box-shadow 220ms ease;
+}
+
+.volunteer-role:nth-child(n + 4) {
+  grid-column: span 3;
+}
+
+.volunteer-role:hover {
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-5px);
+}
+
+.volunteer-role h3 {
+  margin: 20px 0 8px;
+  color: var(--green-deep);
+  font-size: 1.3rem;
+  line-height: 1.15;
+}
+
+.volunteer-role p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.volunteer-steps .process-card {
+  min-height: auto;
+}
+
+.volunteer-steps .process-card h3 {
+  margin-bottom: 0;
+  font-size: 1.12rem;
+  line-height: 1.35;
+}
+
+.volunteer-join-footer {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  margin-top: 34px;
+}
+
+.volunteer-join-footer .sponsor-steps-note {
+  flex: 1 1 auto;
+  margin: 0;
+}
+
+.volunteer-join-footer .btn {
+  flex: 0 0 auto;
+}
+
+/* Compromisos del hogar de paso: texto apilado, sin tarjetas. */
+.volunteer-foster-split {
+  display: grid;
+  gap: 18px;
+  margin-top: 24px;
+}
+
+.volunteer-foster-split span {
+  display: inline-block;
+  padding: 6px 14px;
+  color: white;
+  background: var(--green);
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.volunteer-foster-split p {
+  margin: 10px 0 0;
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.volunteer-foster-note {
+  margin: 26px 0 0;
+  padding-left: 20px;
+  color: var(--green-deep);
+  border-left: 4px solid var(--green);
+  font-size: clamp(1.05rem, 1.8vw, 1.25rem);
+  font-weight: 900;
+  line-height: 1.35;
+}
+
+.volunteer-foster-button {
+  margin-top: 28px;
+}
+
+/* Composiciones de imágenes propias de /voluntariado: todo va posicionado dentro
+   de su contenedor, así nada sobresale del viewport. */
+
+/* Portada: imagen en círculo a la izquierda y texto a la derecha. */
+.volunteer-hero .hero-grid {
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+}
+
+.volunteer-hero .hero-content {
+  order: 2;
+}
+
+/* Portada sin degradado ni mancha verde de fondo. Ocupa la primera pantalla
+   completa con el contenido centrado, para que no quede espacio vacío abajo. */
+.volunteer-hero {
+  display: flex;
+  align-items: center;
+  min-height: 100vh;
+  min-height: 100svh;
+  padding-top: 130px;
+  padding-bottom: 70px;
+  background: none;
+}
+
+.volunteer-hero h1 {
+  font-size: clamp(3rem, 5.4vw, 5.4rem);
+}
+
+.volunteer-hero::before {
+  display: none;
+}
+
+.volunteer-hero-circle {
+  position: relative;
+  width: 100%;
+  max-width: 620px;
+  aspect-ratio: 1;
+  overflow: hidden;
+  background: var(--green-light);
+  border: 10px solid white;
+  border-radius: 50%;
+  box-shadow: var(--shadow-lg);
+  justify-self: center;
+}
+
+.volunteer-hero-circle img,
+.volunteer-why-photo img,
+.volunteer-foster-photo img {
+  object-fit: cover;
+  object-position: center 35%;
+}
+
+.volunteer-split {
+  display: grid;
+  align-items: center;
+  gap: 80px;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+}
+
+.volunteer-split-media-first {
+  grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+}
+
+/* "¿Por qué?": una sola foto en cuadro con un bloque lima girado detrás. */
+.volunteer-why-visual {
+  position: relative;
+  width: 100%;
+  max-width: 460px;
+  justify-self: center;
+  padding: 0 6% 6% 0;
+}
+
+.volunteer-why-visual::before {
+  position: absolute;
+  top: 8%;
+  right: 0;
+  bottom: 0;
+  left: 8%;
+  content: "";
+  background: var(--lime);
+  border-radius: var(--radius-lg);
+  transform: rotate(-4deg);
+}
+
+.volunteer-why-photo {
+  position: relative;
+  aspect-ratio: 1;
+  overflow: hidden;
+  background: var(--green-light);
+  border: 8px solid white;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+}
+
+.volunteer-why-badge {
+  position: absolute;
+  bottom: 12%;
+  left: 0;
+  display: grid;
+  margin: 0;
+  padding: 14px 18px;
+  color: white;
+  background: var(--green-deep);
+  border-radius: 18px;
+  box-shadow: var(--shadow-lg);
+}
+
+.volunteer-why-badge strong {
+  color: var(--lime);
+  font-size: 1.25rem;
+  line-height: 1.1;
+}
+
+.volunteer-why-badge span {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.8rem;
+  font-weight: 800;
+}
+
+.volunteer-foster-visual {
+  position: relative;
+  width: 100%;
+  max-width: 460px;
+  justify-self: center;
+  padding: 7% 0 0 7%;
+}
+
+.volunteer-foster-blob {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 55%;
+  aspect-ratio: 1;
+  background: var(--lime);
+  border-radius: 50%;
+}
+
+.volunteer-foster-photo {
+  position: relative;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  background: var(--green-light);
+  border: 8px solid white;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+}
+
+.volunteer-foster-seal {
+  position: absolute;
+  right: 4%;
+  bottom: 5%;
+  display: grid;
+  width: 30%;
+  aspect-ratio: 1;
+  place-items: center;
+  align-content: center;
+  gap: 4px;
+  margin: 0;
+  padding: 10px;
+  color: white;
+  background: var(--green-deep);
+  border: 6px solid white;
+  border-radius: 50%;
+  box-shadow: var(--shadow-lg);
+  text-align: center;
+}
+
+.volunteer-foster-seal .icon {
+  width: 28%;
+  height: auto;
+  color: var(--lime);
+}
+
+.volunteer-foster-seal span {
+  font-size: clamp(0.62rem, 1.1vw, 0.8rem);
+  font-weight: 900;
+  line-height: 1.1;
+}
+
+@media (max-width: 1050px) {
+  .volunteer-roles {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .volunteer-role,
+  .volunteer-role:nth-child(n + 4) {
+    grid-column: auto;
+  }
+
+  .volunteer-role:last-child {
+    grid-column: 1 / -1;
+  }
+
+  .volunteer-split {
+    gap: 40px;
+  }
+}
+
+@media (max-width: 820px) {
+  .volunteer-hero {
+    display: block;
+    min-height: auto;
+    padding-top: 135px;
+    padding-bottom: 80px;
+  }
+
+  .volunteer-hero .hero-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .volunteer-hero .hero-content {
+    order: 0;
+  }
+
+  .volunteer-hero-circle {
+    max-width: 440px;
+    justify-self: center;
+  }
+
+  .volunteer-split,
+  .volunteer-split-media-first {
+    grid-template-columns: 1fr;
+  }
+
+  .volunteer-why-visual {
+    max-width: 380px;
+  }
+
+  .volunteer-foster-visual {
+    max-width: 380px;
+  }
+
+  .volunteer-join-footer {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .volunteer-join-footer .btn {
+    align-self: flex-start;
+  }
+}
+
+@media (max-width: 620px) {
+  .volunteer-roles-section {
+    padding: 80px 0;
+  }
+
+  .volunteer-roles {
+    grid-template-columns: 1fr;
+  }
+
+  .volunteer-role {
+    padding: 24px;
+  }
+
+  .volunteer-steps {
+    grid-template-columns: 1fr;
   }
 }

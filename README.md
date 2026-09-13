@@ -10,9 +10,11 @@ Sitio web de la Fundación Protegiendo Huellas (Paipa, Boyacá, Colombia) para d
 - **Vista previa en la landing** con 6 perritos y acceso a la página completa `/perritos`.
 - **Página `/perritos`** con búsqueda por nombre, filtros por tamaño y carga progresiva de resultados.
 - **Sección de adoptados** ("Ya encontraron un hogar") con las historias de los perritos que ya tienen familia. La búsqueda y los filtros solo muestran los que siguen en adopción.
-- **Ficha detallada** de cada perro con su historia y un acceso directo a WhatsApp con un mensaje prellenado para iniciar el proceso de adopción.
+- **Ficha detallada** de cada perro con su historia y un botón que abre la solicitud de adopción con ese perrito ya elegido.
+- **Página `/adopciones`** con recomendaciones y los pasos del proceso, y **formulario `/adopciones/solicitud`** que valida las respuestas y compromisos y los envía por WhatsApp listos para mandar.
 - **Favoritos** guardados en el navegador del visitante (sin cuentas), con filtro "Favoritos" en `/perritos` y acceso "Ver mis favoritos" desde la landing.
 - **Página `/apadrinamiento`** con los programas Padrino Solidario (pasos, beneficios, planes mensuales y aporte para esterilizaciones) y Padrino de Ingreso.
+- **Página `/voluntariado`** con formas de ayudar, requisitos, cómo unirse, hogar de paso y preguntas frecuentes.
 - Secciones informativas: proceso de adopción, la fundación, datos para donaciones, redes sociales y contacto.
 - Diseño responsive y accesible (navegación por teclado, textos alternativos, enlaces de salto).
 
@@ -98,6 +100,8 @@ Puede ejecutarse de nuevo para asegurar el rol `superadmin`.
 - `src/app/page.tsx`: landing pública.
 - `src/app/perritos/page.tsx`: catálogo completo y perritos adoptados.
 - `src/app/apadrinamiento/page.tsx`: programas de apadrinamiento (contenido estático).
+- `src/app/voluntariado/page.tsx`: voluntariado y hogar de paso (contenido estático).
+- `src/app/adopciones`: proceso de adopción y formulario de solicitud (`src/components/adoption-form.tsx`, preguntas en `src/lib/adoption.ts`).
 - `src/app/admin`: login y panel administrativo.
 - `src/app/api`: creación de administradores y health check.
 - `src/components`: componentes de la landing, incluido el catálogo.

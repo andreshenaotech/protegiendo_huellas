@@ -76,6 +76,26 @@ export function PillIcon() {
   return <svg {...iconProps}><path d="M10.5 20.5a4.95 4.95 0 0 1-7-7l10-10a4.95 4.95 0 0 1 7 7Z" /><path d="m8.5 8.5 7 7" /></svg>;
 }
 
+export function HomeIcon() {
+  return <svg {...iconProps}><path d="M3 10.5 12 3l9 7.5" /><path d="M5 9.5V21h14V9.5" /><path d="M10 21v-6h4v6" /></svg>;
+}
+
+export function GlobeIcon() {
+  return <svg {...iconProps}><circle cx="12" cy="12" r="9" /><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18" /></svg>;
+}
+
+export function CalendarIcon() {
+  return <svg {...iconProps}><rect x="3" y="5" width="18" height="16" rx="2" /><path d="M16 3v4M8 3v4M3 10h18" /></svg>;
+}
+
+export function BriefcaseIcon() {
+  return <svg {...iconProps}><rect x="3" y="7" width="18" height="13" rx="2" /><path d="M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2M3 13h18" /></svg>;
+}
+
+export function ShelterPawIcon() {
+  return <svg {...iconProps}><circle cx="6" cy="10" r="1.8" /><circle cx="10" cy="6.5" r="1.8" /><circle cx="14" cy="6.5" r="1.8" /><circle cx="18" cy="10" r="1.8" /><path d="M12 12c-3 0-5.5 2.6-5.5 5 0 1.8 1.5 2.8 3.2 2.2a7 7 0 0 1 4.6 0c1.7.6 3.2-.4 3.2-2.2 0-2.4-2.5-5-5.5-5Z" /></svg>;
+}
+
 export function PinIcon() {
   return <svg {...iconProps}><path d="M21 10c0 7-9 12-9 12S3 17 3 10a9 9 0 1 1 18 0Z" /><circle cx="12" cy="10" r="3" /></svg>;
 }

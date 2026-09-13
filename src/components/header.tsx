@@ -33,7 +33,8 @@ export function Header() {
         <nav className={`nav-links${menuOpen ? " open" : ""}`} id="navLinks" aria-label="Navegación principal">
           <Link href="/perritos" onClick={closeMenu}>Adopta</Link>
           <Link href="/apadrinamiento" onClick={closeMenu}>Apadrinamiento</Link>
-          <Link href="/#proceso" onClick={closeMenu}>Cómo adoptar</Link>
+          <Link href="/voluntariado" onClick={closeMenu}>Voluntariado</Link>
+          <Link href="/adopciones" onClick={closeMenu}>Cómo adoptar</Link>
           <Link href="/#nosotros" onClick={closeMenu}>La Fundación</Link>
           <Link className="btn btn-primary" href="/#donaciones" onClick={closeMenu}>Quiero donar</Link>
         </nav>
