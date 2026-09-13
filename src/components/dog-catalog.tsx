@@ -303,59 +303,62 @@ export function DogCatalog({ dogs: initialDogs }: DogCatalogProps) {
           </div>
         </div>
 
-        {shownDogs.length > 0 ? (
-          <div className="dogs-grid" data-reveal="up">
-            {shownDogs.map((dog, index) => {
-              const favorite = favorites.has(dog.id);
-              const imageUrl = getDogImageUrl(dog.image_path);
-              return (
-                <article className="dog-card revealed" key={dog.id} style={{ animationDelay: `${Math.min(index * 35, 280)}ms` }}>
-                  <div className="dog-photo-wrap">
-                    <button className="dog-photo-trigger" type="button" aria-label={`Ver ficha de ${dog.name}`} onClick={(event) => openDog(dog, event.currentTarget)}>
-                      {imageUrl ? (
-                        <Image className="dog-photo" src={imageUrl} alt={`Foto de ${dog.name}, perro en adopción`} fill sizes="(max-width: 620px) calc(100vw - 28px), (max-width: 1050px) 50vw, 380px" />
-                      ) : (
-                        <span className="dog-photo-placeholder"><span>Foto pendiente</span><small>Pronto conocerás su carita</small></span>
-                      )}
-                      <span className="status-pill">Busca hogar</span>
-                    </button>
-                    <button
-                      className={`favorite-button${favorite ? " active" : ""}`}
-                      type="button"
-                      aria-label={`${favorite ? "Quitar a" : "Guardar a"} ${dog.name} ${favorite ? "de" : "en"} favoritos`}
-                      aria-pressed={favorite}
-                      onClick={() => toggleFavorite(dog.id)}
-                    >
-                      <HeartIcon />
-                    </button>
-                  </div>
-                  <div className="dog-info">
-                    <h3 className="dog-name">{dog.name}</h3>
-                    <div className="dog-meta">
-                      <span className="meta-tag">{dog.age}</span>
-                      <span className="meta-tag">{dog.size}</span>
-                    </div>
-                    <p className="dog-status">{dog.status}</p>
-                    {canEdit && (
-                      <div className="dog-admin-actions" aria-label={`Administrar a ${dog.name}`}>
-                        <button type="button" onClick={(event) => openEditor(dog, event.currentTarget)}>Editar</button>
-                        <button
-                          className="danger"
-                          type="button"
-                          disabled={deletingDogId === dog.id}
-                          onClick={() => deleteDog(dog)}
-                        >
-                          {deletingDogId === dog.id ? "Eliminando…" : "Eliminar"}
-                        </button>
-                      </div>
+        {/* La grilla queda siempre montada: ScrollReveals solo observa los
+            elementos presentes al cargar, y una grilla recreada tras una
+            búsqueda sin resultados quedaría invisible. */}
+        <div className="dogs-grid" data-reveal="up">
+          {shownDogs.map((dog, index) => {
+            const favorite = favorites.has(dog.id);
+            const imageUrl = getDogImageUrl(dog.image_path);
+            return (
+              <article className="dog-card revealed" key={dog.id} style={{ animationDelay: `${Math.min(index * 35, 280)}ms` }}>
+                <div className="dog-photo-wrap">
+                  <button className="dog-photo-trigger" type="button" aria-label={`Ver ficha de ${dog.name}`} onClick={(event) => openDog(dog, event.currentTarget)}>
+                    {imageUrl ? (
+                      <Image className="dog-photo" src={imageUrl} alt={`Foto de ${dog.name}, perro en adopción`} fill sizes="(max-width: 620px) calc(100vw - 28px), (max-width: 1050px) 50vw, 380px" />
+                    ) : (
+                      <span className="dog-photo-placeholder"><span>Foto pendiente</span><small>Pronto conocerás su carita</small></span>
                     )}
-                    <button className="card-open" type="button" aria-label={`Conocer a ${dog.name}`} onClick={(event) => openDog(dog, event.currentTarget)}><ArrowIcon /></button>
+                    <span className="status-pill">Busca hogar</span>
+                  </button>
+                  <button
+                    className={`favorite-button${favorite ? " active" : ""}`}
+                    type="button"
+                    aria-label={`${favorite ? "Quitar a" : "Guardar a"} ${dog.name} ${favorite ? "de" : "en"} favoritos`}
+                    aria-pressed={favorite}
+                    onClick={() => toggleFavorite(dog.id)}
+                  >
+                    <HeartIcon />
+                  </button>
+                </div>
+                <div className="dog-info">
+                  <h3 className="dog-name">{dog.name}</h3>
+                  <div className="dog-meta">
+                    <span className="meta-tag">{dog.age}</span>
+                    <span className="meta-tag">{dog.size}</span>
                   </div>
-                </article>
-              );
-            })}
-          </div>
-        ) : (
+                  <p className="dog-status">{dog.status}</p>
+                  {canEdit && (
+                    <div className="dog-admin-actions" aria-label={`Administrar a ${dog.name}`}>
+                      <button type="button" onClick={(event) => openEditor(dog, event.currentTarget)}>Editar</button>
+                      <button
+                        className="danger"
+                        type="button"
+                        disabled={deletingDogId === dog.id}
+                        onClick={() => deleteDog(dog)}
+                      >
+                        {deletingDogId === dog.id ? "Eliminando…" : "Eliminar"}
+                      </button>
+                    </div>
+                  )}
+                  <button className="card-open" type="button" aria-label={`Conocer a ${dog.name}`} onClick={(event) => openDog(dog, event.currentTarget)}><ArrowIcon /></button>
+                </div>
+              </article>
+            );
+          })}
+        </div>
+
+        {shownDogs.length === 0 && (
           <div className="empty-state visible">
             <strong>No encontramos coincidencias</strong>
             <span>Prueba otro nombre o selecciona un tamaño diferente.</span>
