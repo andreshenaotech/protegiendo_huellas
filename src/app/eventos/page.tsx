@@ -43,10 +43,9 @@ export default async function EventsPage() {
               </div>
             </div>
 
-            {/* Imagen provisional: reemplazar por una foto propia de eventos. */}
             <div className="events-hero-visual" data-reveal="up">
               <div className="events-hero-photo">
-                <Image src="/dog1.png" alt="Perrito de la Fundación Protegiendo Huellas" fill preload sizes="(max-width: 820px) calc(100vw - 28px), 520px" />
+                <Image src="/eventos_hero.webp" alt="Perrito de la Fundación Protegiendo Huellas" fill preload sizes="(max-width: 820px) calc(100vw - 28px), 520px" />
               </div>
               <p className="events-hero-badge">
                 <strong>{upcoming.length}</strong>

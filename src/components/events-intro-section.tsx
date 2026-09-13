@@ -22,10 +22,9 @@ export function EventsIntroSection() {
             </div>
           </div>
 
-          {/* Imagen provisional: reemplazar por una foto propia de eventos. */}
           <div className="events-intro-visual">
             <div className="events-intro-photo">
-              <Image src="/dog1.png" alt="" fill sizes="(max-width: 820px) 240px, 360px" />
+              <Image src="/vive_causa.webp" alt="" fill sizes="(max-width: 820px) 240px, 360px" />
             </div>
           </div>
         </div>
