@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { Footer } from "@/components/footer";
+import { ExploreLinksSection } from "@/components/explore-links-section";
 import { type Faq, FaqSection } from "@/components/faq-section";
 import { Header } from "@/components/header";
 import { ArrowIcon, BowlIcon, ChatIcon, HeartIcon, PhoneIcon, PillIcon, SearchIcon, StethoscopeIcon, SyringeIcon } from "@/components/icons";
@@ -383,6 +384,8 @@ export default function SponsorshipPage() {
             </div>
           </div>
         </section>
+
+        <ExploreLinksSection variant="compact" exclude={["apadrina"]} />
 
         <FaqSection eyebrow="Apadrinamiento" faqs={faqs} />
 

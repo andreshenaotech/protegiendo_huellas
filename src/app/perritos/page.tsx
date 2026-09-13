@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { DogCatalog } from "@/components/dog-catalog";
+import { ExploreLinksSection } from "@/components/explore-links-section";
 import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
 import { ScrollReveals } from "@/components/scroll-reveals";
@@ -23,6 +24,7 @@ export default async function DogsPage() {
       <ScrollReveals />
       <main id="main" className="dogs-page">
         <DogCatalog dogs={dogs} variant="full" />
+        <ExploreLinksSection variant="compact" exclude={["adopta"]} />
       </main>
       <Footer />
     </>

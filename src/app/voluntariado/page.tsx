@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import { EventsIntroSection } from "@/components/events-intro-section";
+import { ExploreLinksSection } from "@/components/explore-links-section";
 import { type Faq, FaqSection } from "@/components/faq-section";
 import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
@@ -267,6 +268,8 @@ export default function VolunteerPage() {
             </div>
           </div>
         </section>
+
+        <ExploreLinksSection variant="compact" exclude={["voluntariado"]} />
 
         <FaqSection eyebrow="Voluntariado" faqs={faqs} />
 

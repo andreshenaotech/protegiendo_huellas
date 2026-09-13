@@ -10,6 +10,7 @@ import {
   useRef,
   useState,
 } from "react";
+import { AdminAccordion } from "@/app/admin/admin-accordion";
 import { AdminEvents } from "@/app/admin/admin-events";
 import type { CurrentAdmin } from "@/lib/auth";
 import { deleteDog as deleteDogAction, removeDogImage, setDogAdopted } from "@/lib/dog-actions";
@@ -308,134 +309,141 @@ export function AdminDashboard({ admin, initialDogs, initialEvents }: AdminDashb
           <div className="admin-count-card"><strong>{availableCount}</strong><span>en adopción · {dogs.length - availableCount} adoptados</span></div>
         </section>
 
-        <div className="admin-workspace">
-          <section className="admin-panel admin-dog-form-panel" ref={formRef}>
-            <div className="admin-panel-heading">
-              <div>
-                <p className="admin-kicker">{editingId === null ? "Nuevo registro" : "Editando ficha"}</p>
-                <h2>{editingId === null ? "Agregar un perro" : `Editar a ${dogForm.name}`}</h2>
-              </div>
-              {editingId !== null && <button className="admin-text-button" type="button" onClick={resetDogForm}>Cancelar</button>}
-            </div>
-
-            <form className="admin-form" onSubmit={handleDogSubmit}>
-              <label className="admin-field">
-                <span>Nombre</span>
-                <input required maxLength={DOG_FIELD_LIMITS.name} value={dogForm.name} onChange={(event) => updateDogField("name", event.target.value)} />
-              </label>
-              <label className="admin-field">
-                <span>Descripción</span>
-                <textarea rows={5} maxLength={DOG_FIELD_LIMITS.description} placeholder="Cuenta un poco sobre su historia y personalidad." value={dogForm.description} onChange={(event) => updateDogField("description", event.target.value)} />
-                <small>Si la dejas vacía, se agregará automáticamente el texto informativo predeterminado.</small>
-              </label>
-              <div className="admin-field-row">
-                <label className="admin-field">
-                  <span>Edad</span>
-                  <input required maxLength={DOG_FIELD_LIMITS.age} placeholder="Ej. 3 años" value={dogForm.age} onChange={(event) => updateDogField("age", event.target.value)} />
-                </label>
-                <label className="admin-field">
-                  <span>Tamaño</span>
-                  <input required maxLength={DOG_FIELD_LIMITS.size} placeholder="Ej. Mediana" value={dogForm.size} onChange={(event) => updateDogField("size", event.target.value)} />
-                </label>
-              </div>
-              <label className="admin-field">
-                <span>Estado</span>
-                <input required maxLength={DOG_FIELD_LIMITS.status} placeholder="Ej. Esterilizada y vacunada" value={dogForm.status} onChange={(event) => updateDogField("status", event.target.value)} />
-                <small>Es un texto libre: esterilizado, castrado, vacunado u otra información.</small>
-              </label>
-              {editingDog?.image_path && (
-                <div className="admin-current-image">
-                  <div className="admin-current-image-thumb">
-                    <Image src={getDogImageUrl(editingDog.image_path)!} alt={`Imagen actual de ${editingDog.name}`} fill sizes="72px" />
+        <div className="admin-accordions">
+          <AdminAccordion
+            title="Perritos"
+            description="Agregar, editar, marcar como adoptados o eliminar perritos."
+            meta={`${dogs.length} ${dogs.length === 1 ? "perrito" : "perritos"}`}
+          >
+            <div className="admin-workspace">
+              <section className="admin-panel admin-dog-form-panel" ref={formRef}>
+                <div className="admin-panel-heading">
+                  <div>
+                    <p className="admin-kicker">{editingId === null ? "Nuevo registro" : "Editando ficha"}</p>
+                    <h2>{editingId === null ? "Agregar un perro" : `Editar a ${dogForm.name}`}</h2>
                   </div>
-                  <div className="admin-current-image-copy">
-                    <strong>Imagen actual</strong>
-                    <span>Puedes reemplazarla eligiendo otra o eliminarla ahora.</span>
-                  </div>
-                  <button className="admin-remove-image" type="button" onClick={removeCurrentImage} disabled={dogBusy}>
-                    Eliminar imagen
-                  </button>
+                  {editingId !== null && <button className="admin-text-button" type="button" onClick={resetDogForm}>Cancelar</button>}
                 </div>
-              )}
-              <label className="admin-field admin-file-field">
-                <span>{editingId === null ? "Imagen" : "Nueva imagen"}</span>
-                <input ref={fileInputRef} type="file" accept="image/jpeg,image/png,image/webp" onChange={handleImageChange} />
-                <small>{imageFile ? imageFile.name : editingId === null ? "JPG, PNG o WebP. Se optimiza automáticamente." : "Déjalo vacío para conservar la imagen actual."}</small>
-              </label>
-              {dogNotice && <p className={`admin-message ${dogNotice.type}`} role="status">{dogNotice.text}</p>}
-              <button className="btn btn-primary admin-submit" type="submit" disabled={dogBusy}>
-                {dogBusy ? "Guardando…" : editingId === null ? "Agregar perro" : "Guardar cambios"}
-              </button>
-            </form>
-          </section>
 
-          <section className="admin-panel admin-dog-list-panel">
-            <div className="admin-panel-heading admin-list-heading">
-              <div><p className="admin-kicker">Landing page</p><h2>Perros publicados</h2></div>
-              <label className="admin-search"><span className="sr-only">Buscar perros</span><input type="search" placeholder="Buscar…" value={search} onChange={(event) => setSearch(event.target.value)} /></label>
-            </div>
-            <p className="admin-result-count">{filteredDogs.length} {filteredDogs.length === 1 ? "resultado" : "resultados"}</p>
-            <div className="admin-dog-list">
-              {filteredDogs.map((dog) => {
-                const imageUrl = getDogImageUrl(dog.image_path);
-                const adopted = isAdopted(dog);
-                return (
-                  <article className={`admin-dog-row${adopted ? " is-adopted" : ""}`} key={dog.id}>
-                    <div className={`admin-dog-thumb${imageUrl ? " has-image" : ""}`}>
-                      {imageUrl ? <Image src={imageUrl} alt={`Foto de ${dog.name}`} fill sizes="76px" /> : <span>Foto<br />pendiente</span>}
+                <form className="admin-form" onSubmit={handleDogSubmit}>
+                  <label className="admin-field">
+                    <span>Nombre</span>
+                    <input required maxLength={DOG_FIELD_LIMITS.name} value={dogForm.name} onChange={(event) => updateDogField("name", event.target.value)} />
+                  </label>
+                  <label className="admin-field">
+                    <span>Descripción</span>
+                    <textarea rows={5} maxLength={DOG_FIELD_LIMITS.description} placeholder="Cuenta un poco sobre su historia y personalidad." value={dogForm.description} onChange={(event) => updateDogField("description", event.target.value)} />
+                    <small>Si la dejas vacía, se agregará automáticamente el texto informativo predeterminado.</small>
+                  </label>
+                  <div className="admin-field-row">
+                    <label className="admin-field">
+                      <span>Edad</span>
+                      <input required maxLength={DOG_FIELD_LIMITS.age} placeholder="Ej. 3 años" value={dogForm.age} onChange={(event) => updateDogField("age", event.target.value)} />
+                    </label>
+                    <label className="admin-field">
+                      <span>Tamaño</span>
+                      <input required maxLength={DOG_FIELD_LIMITS.size} placeholder="Ej. Mediana" value={dogForm.size} onChange={(event) => updateDogField("size", event.target.value)} />
+                    </label>
+                  </div>
+                  <label className="admin-field">
+                    <span>Estado</span>
+                    <input required maxLength={DOG_FIELD_LIMITS.status} placeholder="Ej. Esterilizada y vacunada" value={dogForm.status} onChange={(event) => updateDogField("status", event.target.value)} />
+                    <small>Es un texto libre: esterilizado, castrado, vacunado u otra información.</small>
+                  </label>
+                  {editingDog?.image_path && (
+                    <div className="admin-current-image">
+                      <div className="admin-current-image-thumb">
+                        <Image src={getDogImageUrl(editingDog.image_path)!} alt={`Imagen actual de ${editingDog.name}`} fill sizes="72px" />
+                      </div>
+                      <div className="admin-current-image-copy">
+                        <strong>Imagen actual</strong>
+                        <span>Puedes reemplazarla eligiendo otra o eliminarla ahora.</span>
+                      </div>
+                      <button className="admin-remove-image" type="button" onClick={removeCurrentImage} disabled={dogBusy}>
+                        Eliminar imagen
+                      </button>
                     </div>
-                    <div className="admin-dog-summary">
-                      <h3>{dog.name}{adopted && <em className="admin-adopted-badge">Adoptado</em>}</h3>
-                      <p>{dog.age} · {dog.size}</p>
-                      <span>{dog.status}</span>
-                    </div>
-                    <div className="admin-row-actions">
-                      <button type="button" onClick={() => startEditing(dog)} disabled={dogBusy}>Editar</button>
-                      <button type="button" onClick={() => toggleAdopted(dog)} disabled={dogBusy}>{adopted ? "Devolver a adopción" : "Marcar adoptado"}</button>
-                      <button className="danger" type="button" onClick={() => deleteDog(dog)} disabled={dogBusy}>Eliminar</button>
-                    </div>
-                  </article>
-                );
-              })}
-              {filteredDogs.length === 0 && <div className="admin-empty"><strong>No hay coincidencias.</strong><span>Prueba con otro nombre, edad, tamaño o estado.</span></div>}
-            </div>
-          </section>
-        </div>
-
-        <AdminEvents initialEvents={initialEvents} />
-
-        <section className="admin-account-section">
-          <div className="admin-section-heading">
-            <p className="admin-kicker">Seguridad y equipo</p>
-            <h2>Accesos administrativos</h2>
-          </div>
-          <div className="admin-account-grid">
-            {admin.role === "superadmin" && (
-              <section className="admin-panel">
-                <div className="admin-panel-heading"><div><p className="admin-kicker">Solo superadmin</p><h3>Crear administrador</h3></div></div>
-                <p className="admin-panel-copy">Esta cuenta podrá agregar, editar y eliminar perros, pero no podrá crear otros administradores.</p>
-                <form className="admin-form" onSubmit={createAdmin}>
-                  <label className="admin-field"><span>Correo electrónico</span><input type="email" autoComplete="off" required value={adminEmail} onChange={(event) => setAdminEmail(event.target.value)} /></label>
-                  <label className="admin-field"><span>Contraseña temporal</span><input type="password" autoComplete="new-password" minLength={10} required value={adminPassword} onChange={(event) => setAdminPassword(event.target.value)} /></label>
-                  <label className="admin-field"><span>Confirmar contraseña</span><input type="password" autoComplete="new-password" minLength={10} required value={adminPasswordConfirm} onChange={(event) => setAdminPasswordConfirm(event.target.value)} /></label>
-                  {adminNotice && <p className={`admin-message ${adminNotice.type}`} role="status">{adminNotice.text}</p>}
-                  <button className="btn btn-primary admin-submit" type="submit" disabled={adminBusy}>{adminBusy ? "Creando…" : "Crear administrador"}</button>
+                  )}
+                  <label className="admin-field admin-file-field">
+                    <span>{editingId === null ? "Imagen" : "Nueva imagen"}</span>
+                    <input ref={fileInputRef} type="file" accept="image/jpeg,image/png,image/webp" onChange={handleImageChange} />
+                    <small>{imageFile ? imageFile.name : editingId === null ? "JPG, PNG o WebP. Se optimiza automáticamente." : "Déjalo vacío para conservar la imagen actual."}</small>
+                  </label>
+                  {dogNotice && <p className={`admin-message ${dogNotice.type}`} role="status">{dogNotice.text}</p>}
+                  <button className="btn btn-primary admin-submit" type="submit" disabled={dogBusy}>
+                    {dogBusy ? "Guardando…" : editingId === null ? "Agregar perro" : "Guardar cambios"}
+                  </button>
                 </form>
               </section>
-            )}
 
-            <section className="admin-panel">
-              <div className="admin-panel-heading"><div><p className="admin-kicker">Mi cuenta</p><h3>Cambiar contraseña</h3></div></div>
-              <p className="admin-panel-copy">Actualiza la contraseña de la cuenta con la que tienes la sesión iniciada.</p>
-              <form className="admin-form" onSubmit={changePassword}>
-                <label className="admin-field"><span>Nueva contraseña</span><input type="password" autoComplete="new-password" minLength={10} required value={newPassword} onChange={(event) => setNewPassword(event.target.value)} /></label>
-                <label className="admin-field"><span>Confirmar nueva contraseña</span><input type="password" autoComplete="new-password" minLength={10} required value={newPasswordConfirm} onChange={(event) => setNewPasswordConfirm(event.target.value)} /></label>
-                {passwordNotice && <p className={`admin-message ${passwordNotice.type}`} role="status">{passwordNotice.text}</p>}
-                <button className="btn btn-outline admin-submit" type="submit" disabled={passwordBusy}>{passwordBusy ? "Actualizando…" : "Cambiar contraseña"}</button>
-              </form>
-            </section>
-          </div>
-        </section>
+              <section className="admin-panel admin-dog-list-panel">
+                <div className="admin-panel-heading admin-list-heading">
+                  <div><p className="admin-kicker">Landing page</p><h2>Perros publicados</h2></div>
+                  <label className="admin-search"><span className="sr-only">Buscar perros</span><input type="search" placeholder="Buscar…" value={search} onChange={(event) => setSearch(event.target.value)} /></label>
+                </div>
+                <p className="admin-result-count">{filteredDogs.length} {filteredDogs.length === 1 ? "resultado" : "resultados"}</p>
+                <div className="admin-dog-list">
+                  {filteredDogs.map((dog) => {
+                    const imageUrl = getDogImageUrl(dog.image_path);
+                    const adopted = isAdopted(dog);
+                    return (
+                      <article className={`admin-dog-row${adopted ? " is-adopted" : ""}`} key={dog.id}>
+                        <div className={`admin-dog-thumb${imageUrl ? " has-image" : ""}`}>
+                          {imageUrl ? <Image src={imageUrl} alt={`Foto de ${dog.name}`} fill sizes="76px" /> : <span>Foto<br />pendiente</span>}
+                        </div>
+                        <div className="admin-dog-summary">
+                          <h3>{dog.name}{adopted && <em className="admin-adopted-badge">Adoptado</em>}</h3>
+                          <p>{dog.age} · {dog.size}</p>
+                          <span>{dog.status}</span>
+                        </div>
+                        <div className="admin-row-actions">
+                          <button type="button" onClick={() => startEditing(dog)} disabled={dogBusy}>Editar</button>
+                          <button type="button" onClick={() => toggleAdopted(dog)} disabled={dogBusy}>{adopted ? "Devolver a adopción" : "Marcar adoptado"}</button>
+                          <button className="danger" type="button" onClick={() => deleteDog(dog)} disabled={dogBusy}>Eliminar</button>
+                        </div>
+                      </article>
+                    );
+                  })}
+                  {filteredDogs.length === 0 && <div className="admin-empty"><strong>No hay coincidencias.</strong><span>Prueba con otro nombre, edad, tamaño o estado.</span></div>}
+                </div>
+              </section>
+            </div>
+          </AdminAccordion>
+
+          <AdminEvents initialEvents={initialEvents} />
+
+          <AdminAccordion
+            title="Accesos"
+            description={admin.role === "superadmin" ? "Crear administradores y cambiar tu contraseña." : "Cambiar la contraseña de tu cuenta."}
+          >
+            <div className="admin-account-grid">
+              {admin.role === "superadmin" && (
+                <section className="admin-panel">
+                  <div className="admin-panel-heading"><div><p className="admin-kicker">Solo superadmin</p><h3>Crear administrador</h3></div></div>
+                  <p className="admin-panel-copy">Esta cuenta podrá agregar, editar y eliminar perros, pero no podrá crear otros administradores.</p>
+                  <form className="admin-form" onSubmit={createAdmin}>
+                    <label className="admin-field"><span>Correo electrónico</span><input type="email" autoComplete="off" required value={adminEmail} onChange={(event) => setAdminEmail(event.target.value)} /></label>
+                    <label className="admin-field"><span>Contraseña temporal</span><input type="password" autoComplete="new-password" minLength={10} required value={adminPassword} onChange={(event) => setAdminPassword(event.target.value)} /></label>
+                    <label className="admin-field"><span>Confirmar contraseña</span><input type="password" autoComplete="new-password" minLength={10} required value={adminPasswordConfirm} onChange={(event) => setAdminPasswordConfirm(event.target.value)} /></label>
+                    {adminNotice && <p className={`admin-message ${adminNotice.type}`} role="status">{adminNotice.text}</p>}
+                    <button className="btn btn-primary admin-submit" type="submit" disabled={adminBusy}>{adminBusy ? "Creando…" : "Crear administrador"}</button>
+                  </form>
+                </section>
+              )}
+
+              <section className="admin-panel">
+                <div className="admin-panel-heading"><div><p className="admin-kicker">Mi cuenta</p><h3>Cambiar contraseña</h3></div></div>
+                <p className="admin-panel-copy">Actualiza la contraseña de la cuenta con la que tienes la sesión iniciada.</p>
+                <form className="admin-form" onSubmit={changePassword}>
+                  <label className="admin-field"><span>Nueva contraseña</span><input type="password" autoComplete="new-password" minLength={10} required value={newPassword} onChange={(event) => setNewPassword(event.target.value)} /></label>
+                  <label className="admin-field"><span>Confirmar nueva contraseña</span><input type="password" autoComplete="new-password" minLength={10} required value={newPasswordConfirm} onChange={(event) => setNewPasswordConfirm(event.target.value)} /></label>
+                  {passwordNotice && <p className={`admin-message ${passwordNotice.type}`} role="status">{passwordNotice.text}</p>}
+                  <button className="btn btn-outline admin-submit" type="submit" disabled={passwordBusy}>{passwordBusy ? "Actualizando…" : "Cambiar contraseña"}</button>
+                </form>
+              </section>
+            </div>
+          </AdminAccordion>
+        </div>
       </div>
     </main>
   );

@@ -8,11 +8,14 @@ import { ArrowIcon, ChatIcon, EmailIcon, FacebookIcon, HeartIcon, PhoneIcon, Pin
 import { ScrollReveals } from "@/components/scroll-reveals";
 import { SocialSection } from "@/components/social-section";
 import { isAdopted } from "@/lib/dog-content";
+import { whatsappUrl } from "@/lib/contact";
 import { getPublishedDogs } from "@/lib/dogs";
 
 // Página estática con revalidación: las ediciones del admin invalidan la caché
 // al instante (updateTag) y este intervalo cubre cambios hechos fuera de la app.
 export const revalidate = 300;
+
+const CONTACT_WHATSAPP_URL = whatsappUrl("Hola, vi los perritos en adopción y quiero más información.");
 
 export default async function Home() {
   const dogs = (await getPublishedDogs()).filter((dog) => !isAdopted(dog));
@@ -172,7 +175,8 @@ export default async function Home() {
                 <h2>¿Listo para cambiar su mundo?</h2>
                 <p>Cuéntanos qué perrito conquistó tu corazón. Estaremos felices de resolver tus dudas y acompañarte en este paso.</p>
                 <div className="contact-actions">
-                  <a className="btn btn-light" href="https://www.facebook.com/fundacion.protegiendo.huellas.2025" target="_blank" rel="noopener noreferrer"><FacebookIcon /> Contactar por Facebook</a>
+                  <a className="btn btn-primary" href={CONTACT_WHATSAPP_URL} target="_blank" rel="noopener noreferrer"><ChatIcon /> Contactar por WhatsApp</a>
+                  <a className="btn btn-outline" href="https://www.facebook.com/fundacion.protegiendo.huellas.2025" target="_blank" rel="noopener noreferrer"><FacebookIcon /> Contactar por Facebook</a>
                 </div>
               </div>
               <div className="contact-details">
