@@ -108,6 +108,63 @@ export type Database = {
         }
         Relationships: []
       }
+      events: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          description: string | null
+          event_date: string
+          event_time: string | null
+          facebook_url: string | null
+          flyer_height: number
+          flyer_path: string
+          flyer_width: number
+          id: number
+          instagram_url: string | null
+          location: string | null
+          tiktok_url: string | null
+          title: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          event_date: string
+          event_time?: string | null
+          facebook_url?: string | null
+          flyer_height: number
+          flyer_path: string
+          flyer_width: number
+          id?: never
+          instagram_url?: string | null
+          location?: string | null
+          tiktok_url?: string | null
+          title: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          event_date?: string
+          event_time?: string | null
+          facebook_url?: string | null
+          flyer_height?: number
+          flyer_path?: string
+          flyer_width?: number
+          id?: never
+          instagram_url?: string | null
+          location?: string | null
+          tiktok_url?: string | null
+          title?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

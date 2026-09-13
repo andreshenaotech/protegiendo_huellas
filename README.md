@@ -15,6 +15,7 @@ Sitio web de la Fundación Protegiendo Huellas (Paipa, Boyacá, Colombia) para d
 - **Favoritos** guardados en el navegador del visitante (sin cuentas), con filtro "Favoritos" en `/perritos` y acceso "Ver mis favoritos" desde la landing.
 - **Página `/apadrinamiento`** con los programas Padrino Solidario (pasos, beneficios, planes mensuales y aporte para esterilizaciones) y Padrino de Ingreso.
 - **Página `/voluntariado`** con formas de ayudar, requisitos, cómo unirse, hogar de paso y preguntas frecuentes.
+- **Página `/eventos`** con los próximos eventos (flyer, fecha, hora, lugar y enlaces a redes) y los eventos que ya pasaron, que se mueven solos según la fecha.
 - Secciones informativas: proceso de adopción, la fundación, datos para donaciones, redes sociales y contacto.
 - Diseño responsive y accesible (navegación por teclado, textos alternativos, enlaces de salto).
 
@@ -25,6 +26,7 @@ Sitio web de la Fundación Protegiendo Huellas (Paipa, Boyacá, Colombia) para d
 - Marcar un perro como adoptado o devolverlo a la lista de adopción.
 - Edición rápida desde la propia landing cuando hay una sesión administrativa activa.
 - Las fotos se redimensionan y comprimen automáticamente en el navegador antes de subirse.
+- Crear, editar y eliminar eventos con su flyer.
 - Cambio de contraseña de la cuenta actual.
 - Roles:
   - **superadmin**: gestiona perros y puede crear nuevas cuentas administrativas.
@@ -101,6 +103,7 @@ Puede ejecutarse de nuevo para asegurar el rol `superadmin`.
 - `src/app/perritos/page.tsx`: catálogo completo y perritos adoptados.
 - `src/app/apadrinamiento/page.tsx`: programas de apadrinamiento (contenido estático).
 - `src/app/voluntariado/page.tsx`: voluntariado y hogar de paso (contenido estático).
+- `src/app/eventos/page.tsx`: próximos eventos y eventos pasados (`src/lib/events.ts`, `src/lib/event-actions.ts`).
 - `src/app/adopciones`: proceso de adopción y formulario de solicitud (`src/components/adoption-form.tsx`, preguntas en `src/lib/adoption.ts`).
 - `src/app/admin`: login y panel administrativo.
 - `src/app/api`: creación de administradores y health check.

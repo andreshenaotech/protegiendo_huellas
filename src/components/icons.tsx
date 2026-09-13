@@ -96,6 +96,10 @@ export function ShelterPawIcon() {
   return <svg {...iconProps}><circle cx="6" cy="10" r="1.8" /><circle cx="10" cy="6.5" r="1.8" /><circle cx="14" cy="6.5" r="1.8" /><circle cx="18" cy="10" r="1.8" /><path d="M12 12c-3 0-5.5 2.6-5.5 5 0 1.8 1.5 2.8 3.2 2.2a7 7 0 0 1 4.6 0c1.7.6 3.2-.4 3.2-2.2 0-2.4-2.5-5-5.5-5Z" /></svg>;
 }
 
+export function ClockIcon() {
+  return <svg {...iconProps}><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></svg>;
+}
+
 export function PinIcon() {
   return <svg {...iconProps}><path d="M21 10c0 7-9 12-9 12S3 17 3 10a9 9 0 1 1 18 0Z" /><circle cx="12" cy="10" r="3" /></svg>;
 }

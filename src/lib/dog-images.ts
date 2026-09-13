@@ -1,19 +1,26 @@
 import { getSupabaseUrl } from "@/lib/supabase/env";
 
+// Utilidades de imágenes en Storage compartidas por perros y eventos.
+
 export const DOG_IMAGES_BUCKET = "dog-images";
-// Límite del bucket para el archivo final ya comprimido.
+export const EVENT_FLYERS_BUCKET = "event-flyers";
+// Límite de los buckets para el archivo final ya comprimido.
 export const MAX_DOG_IMAGE_SIZE = 5 * 1024 * 1024;
 // Límite del archivo original elegido por el admin, antes de comprimir.
 export const MAX_DOG_IMAGE_INPUT_SIZE = 20 * 1024 * 1024;
 export const DOG_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp"] as const;
 
-// Nuevos perros: "new/<uuid>.ext". Perros existentes: "<id>/<uuid>.ext".
-const DOG_IMAGE_PATH_PATTERN = /^(new|\d+)\/[0-9a-f-]{36}\.(jpg|png|webp)$/;
+// Registros nuevos: "new/<uuid>.ext". Registros existentes: "<id>/<uuid>.ext".
+const IMAGE_PATH_PATTERN = /^(new|\d+)\/[0-9a-f-]{36}\.(jpg|png|webp)$/;
 
-export function getDogImageUrl(path: string | null) {
+export function getPublicImageUrl(bucket: string, path: string | null) {
   if (!path) return null;
   const encodedPath = path.split("/").map(encodeURIComponent).join("/");
-  return `${getSupabaseUrl()}/storage/v1/object/public/${DOG_IMAGES_BUCKET}/${encodedPath}`;
+  return `${getSupabaseUrl()}/storage/v1/object/public/${bucket}/${encodedPath}`;
+}
+
+export function getDogImageUrl(path: string | null) {
+  return getPublicImageUrl(DOG_IMAGES_BUCKET, path);
 }
 
 export function getDogImageExtension(mimeType: string) {
@@ -22,8 +29,10 @@ export function getDogImageExtension(mimeType: string) {
   return "jpg";
 }
 
-export function isValidDogImagePath(path: string, dogId: number | null) {
-  const match = DOG_IMAGE_PATH_PATTERN.exec(path);
+export function isValidImagePath(path: string, ownerId: number | null) {
+  const match = IMAGE_PATH_PATTERN.exec(path);
   if (!match) return false;
-  return match[1] === (dogId === null ? "new" : String(dogId));
+  return match[1] === (ownerId === null ? "new" : String(ownerId));
 }
+
+export const isValidDogImagePath = isValidImagePath;

@@ -1,4 +1,6 @@
-import { CalendarIcon } from "@/components/icons";
+import Image from "next/image";
+import Link from "next/link";
+import { ArrowIcon } from "@/components/icons";
 
 const eventTypes = ["Jornadas de adopción", "Jornadas de esterilización", "Eventos de la fundación"];
 
@@ -15,17 +17,16 @@ export function EventsIntroSection() {
             <ul className="events-intro-types" aria-label="Tipos de eventos">
               {eventTypes.map((type) => <li key={type}>{type}</li>)}
             </ul>
-            {/* Pendiente: enlazar a la sección de próximos eventos cuando exista. */}
             <div className="events-intro-actions">
-              <button className="btn btn-light" type="button" disabled aria-describedby="events-coming-soon">
-                Próximos eventos
-              </button>
-              <span className="events-intro-soon" id="events-coming-soon">Muy pronto</span>
+              <Link className="btn btn-light" href="/eventos">Próximos eventos <ArrowIcon /></Link>
             </div>
           </div>
 
-          <div className="events-intro-visual" aria-hidden="true">
-            <span className="events-intro-icon"><CalendarIcon /></span>
+          {/* Imagen provisional: reemplazar por una foto propia de eventos. */}
+          <div className="events-intro-visual">
+            <div className="events-intro-photo">
+              <Image src="/dog1.png" alt="" fill sizes="(max-width: 820px) 240px, 360px" />
+            </div>
           </div>
         </div>
       </div>

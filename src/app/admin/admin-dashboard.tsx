@@ -10,16 +10,19 @@ import {
   useRef,
   useState,
 } from "react";
+import { AdminEvents } from "@/app/admin/admin-events";
 import type { CurrentAdmin } from "@/lib/auth";
 import { deleteDog as deleteDogAction, removeDogImage, setDogAdopted } from "@/lib/dog-actions";
 import { DOG_FIELD_LIMITS, type Dog, type DogValues, isAdopted } from "@/lib/dog-content";
 import { submitDog, validateDogImageFile } from "@/lib/dog-editor";
 import { getDogImageUrl } from "@/lib/dog-images";
+import type { FoundationEvent } from "@/lib/event-content";
 import { createClient } from "@/lib/supabase/client";
 
 type AdminDashboardProps = {
   admin: CurrentAdmin;
   initialDogs: Dog[];
+  initialEvents: FoundationEvent[];
 };
 
 type DogFormState = DogValues;
@@ -42,7 +45,7 @@ function getErrorMessage(error: unknown, fallback: string) {
   return fallback;
 }
 
-export function AdminDashboard({ admin, initialDogs }: AdminDashboardProps) {
+export function AdminDashboard({ admin, initialDogs, initialEvents }: AdminDashboardProps) {
   const router = useRouter();
   const supabase = useMemo(() => createClient(), []);
   const formRef = useRef<HTMLDivElement>(null);
@@ -398,6 +401,8 @@ export function AdminDashboard({ admin, initialDogs }: AdminDashboardProps) {
             </div>
           </section>
         </div>
+
+        <AdminEvents initialEvents={initialEvents} />
 
         <section className="admin-account-section">
           <div className="admin-section-heading">
