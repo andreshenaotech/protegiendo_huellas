@@ -16,6 +16,7 @@ Sitio web de la Fundación Protegiendo Huellas (Paipa, Boyacá, Colombia) para d
 - **Página `/apadrinamiento`** con los programas Padrino Solidario (pasos, beneficios, planes mensuales y aporte para esterilizaciones) y Padrino de Ingreso.
 - **Página `/voluntariado`** con formas de ayudar, requisitos, cómo unirse, hogar de paso y preguntas frecuentes.
 - **Página `/eventos`** con los próximos eventos (flyer, fecha, hora, lugar y enlaces a redes) y los eventos que ya pasaron, que se mueven solos según la fecha.
+- **Página `/fundacion`** con la historia, los pilares de acción, la fundadora, accesos a las formas de ayudar y contacto por WhatsApp.
 - Secciones informativas: proceso de adopción, la fundación, datos para donaciones, redes sociales y contacto.
 - Diseño responsive y accesible (navegación por teclado, textos alternativos, enlaces de salto).
 
@@ -103,6 +104,7 @@ Puede ejecutarse de nuevo para asegurar el rol `superadmin`.
 - `src/app/perritos/page.tsx`: catálogo completo y perritos adoptados.
 - `src/app/apadrinamiento/page.tsx`: programas de apadrinamiento (contenido estático).
 - `src/app/voluntariado/page.tsx`: voluntariado y hogar de paso (contenido estático).
+- `src/app/fundacion/page.tsx`: quiénes somos (contenido estático).
 - `src/app/eventos/page.tsx`: próximos eventos y eventos pasados (`src/lib/events.ts`, `src/lib/event-actions.ts`).
 - `src/app/adopciones`: proceso de adopción y formulario de solicitud (`src/components/adoption-form.tsx`, preguntas en `src/lib/adoption.ts`).
 - `src/app/admin`: login y panel administrativo.

@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import { DogPreviewSection } from "@/components/dog-preview-section";
 import { EventsIntroSection } from "@/components/events-intro-section";
 import { Footer } from "@/components/footer";
@@ -30,8 +31,8 @@ export default async function Home() {
               <h1>Tu nuevo mejor <span className="highlight">amigo</span> te espera.</h1>
               <p className="hero-copy">Abre las puertas de tu hogar a una historia que merece un final feliz. Conoce a nuestros perritos, enamórate y cambia dos vidas para siempre.</p>
               <div className="hero-actions">
-                <a className="btn btn-primary" href="#adopta">Conocer perritos <ArrowIcon /></a>
-                <a className="btn btn-outline" href="#proceso">¿Cómo puedo adoptar?</a>
+                <Link className="btn btn-primary" href="/perritos">Conocer perritos <ArrowIcon /></Link>
+                <Link className="btn btn-outline" href="/apadrinamiento">¿Cómo puedo ayudar?</Link>
               </div>
               <div className="hero-trust" aria-label="Información importante">
                 <span>Adopción responsable</span>
@@ -116,7 +117,7 @@ export default async function Home() {
                 <li>Buscamos adopciones conscientes, responsables y definitivas.</li>
                 <li>Te orientamos para encontrar el compañero más compatible contigo.</li>
               </ul>
-              <a className="btn btn-primary" href="#contacto">Hablar con la Fundación</a>
+              <Link className="btn btn-primary" href="/fundacion">Conócenos</Link>
             </div>
           </div>
         </section>

@@ -35,7 +35,7 @@ export function Header() {
           <Link href="/apadrinamiento" onClick={closeMenu}>Apadrinamiento</Link>
           <Link href="/voluntariado" onClick={closeMenu}>Voluntariado</Link>
           <Link href="/adopciones" onClick={closeMenu}>Cómo adoptar</Link>
-          <Link href="/#nosotros" onClick={closeMenu}>La Fundación</Link>
+          <Link href="/fundacion" onClick={closeMenu}>La Fundación</Link>
           <Link className="btn btn-primary" href="/#donaciones" onClick={closeMenu}>Quiero donar</Link>
         </nav>
         <button

@@ -100,6 +100,18 @@ export function ClockIcon() {
   return <svg {...iconProps}><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></svg>;
 }
 
+export function ScissorsIcon() {
+  return <svg {...iconProps}><circle cx="6" cy="6" r="3" /><circle cx="6" cy="18" r="3" /><path d="M20 4 8.1 15.9M14.5 14.5 20 20M8.1 8.1 12 12" /></svg>;
+}
+
+export function MegaphoneIcon() {
+  return <svg {...iconProps}><path d="M3 11v2a1 1 0 0 0 1 1h3l6 4V6L7 10H4a1 1 0 0 0-1 1Z" /><path d="M16.5 8.5a5 5 0 0 1 0 7M19.5 5.5a9 9 0 0 1 0 13" /></svg>;
+}
+
+export function DonateIcon() {
+  return <svg {...iconProps}><path d="M11 13.5 8.5 11a2.1 2.1 0 0 1 3-3l.5.5.5-.5a2.1 2.1 0 0 1 3 3L13 13.5l-1 1Z" /><path d="M2 14h3l3.5 3H14a2 2 0 0 0 0-4h-2.5M5 21h11l5-4.5a1.8 1.8 0 0 0-2.6-2.4L15 17" /></svg>;
+}
+
 export function PinIcon() {
   return <svg {...iconProps}><path d="M21 10c0 7-9 12-9 12S3 17 3 10a9 9 0 1 1 18 0Z" /><circle cx="12" cy="10" r="3" /></svg>;
 }
