@@ -7,9 +7,11 @@ Sitio web de la Fundación Protegiendo Huellas (Paipa, Boyacá, Colombia) para d
 ### Sitio público
 
 - **Catálogo de perros en adopción** con foto, edad, tamaño y estado de salud (esterilización o castración).
-- **Búsqueda por nombre y filtros por tamaño**, con carga progresiva de resultados.
+- **Vista previa en la landing** con 6 perritos y acceso a la página completa `/perritos`.
+- **Página `/perritos`** con búsqueda por nombre, filtros por tamaño y carga progresiva de resultados.
+- **Sección de adoptados** ("Ya encontraron un hogar") con las historias de los perritos que ya tienen familia. La búsqueda y los filtros solo muestran los que siguen en adopción.
 - **Ficha detallada** de cada perro con su historia y un acceso directo a WhatsApp con un mensaje prellenado para iniciar el proceso de adopción.
-- **Favoritos** durante la visita para recordar los perros que más gustaron.
+- **Favoritos** guardados en el navegador del visitante (sin cuentas), con filtro "Favoritos" en `/perritos` y acceso "Ver mis favoritos" desde la landing.
 - Secciones informativas: proceso de adopción, la fundación, datos para donaciones, redes sociales y contacto.
 - Diseño responsive y accesible (navegación por teclado, textos alternativos, enlaces de salto).
 
@@ -17,6 +19,7 @@ Sitio web de la Fundación Protegiendo Huellas (Paipa, Boyacá, Colombia) para d
 
 - Inicio de sesión con correo y contraseña.
 - Agregar, editar y eliminar perros, con subida de fotografía.
+- Marcar un perro como adoptado o devolverlo a la lista de adopción.
 - Edición rápida desde la propia landing cuando hay una sesión administrativa activa.
 - Las fotos se redimensionan y comprimen automáticamente en el navegador antes de subirse.
 - Cambio de contraseña de la cuenta actual.
@@ -92,6 +95,7 @@ Puede ejecutarse de nuevo para asegurar el rol `superadmin`.
 ## Estructura
 
 - `src/app/page.tsx`: landing pública.
+- `src/app/perritos/page.tsx`: catálogo completo y perritos adoptados.
 - `src/app/admin`: login y panel administrativo.
 - `src/app/api`: creación de administradores y health check.
 - `src/components`: componentes de la landing, incluido el catálogo.

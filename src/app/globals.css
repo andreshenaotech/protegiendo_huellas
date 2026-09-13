@@ -878,6 +878,84 @@ button {
   margin-top: 38px;
 }
 
+.catalog-actions {
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.chip-favorites {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.chip-favorites .icon,
+.btn-favorites .icon {
+  width: 16px;
+  height: 16px;
+  color: #d95a52;
+}
+
+.chip-favorites.active .icon {
+  color: currentColor;
+  fill: currentColor;
+}
+
+/* Página /perritos */
+.dogs-page .catalog-section {
+  padding-top: 170px;
+}
+
+.adopted-block {
+  margin-top: 110px;
+  padding-top: 90px;
+  border-top: 1px solid var(--line);
+}
+
+.adopted-grid {
+  margin-top: 40px;
+}
+
+/* La animación de entrada fija la opacidad final, por eso las tarjetas de
+   adoptados usan su propia animación en lugar de sobrescribir `opacity`. */
+.dog-card.is-adopted.revealed {
+  animation-name: card-reveal-adopted;
+}
+
+@keyframes card-reveal-adopted {
+  to {
+    opacity: 0.62;
+    transform: translateY(0);
+  }
+}
+
+.dog-card.is-adopted .dog-photo {
+  filter: saturate(0.75);
+}
+
+.status-pill.adopted {
+  color: #6b4a12;
+}
+
+.status-pill.adopted::before {
+  background: var(--orange);
+  box-shadow: 0 0 0 3px rgba(240, 164, 58, 0.22);
+}
+
+.modal-adopted-note {
+  margin: 0;
+  padding: 14px 16px;
+  color: var(--green-deep);
+  background: var(--green-light);
+  border-radius: var(--radius-sm);
+  font-size: 0.92rem;
+}
+
+.modal-adopted-note strong {
+  display: block;
+  margin-bottom: 2px;
+}
+
 /* Adoption process */
 .process-section {
   position: relative;
@@ -1971,6 +2049,15 @@ a.contact-link:hover {
     margin: 17px 0 0;
   }
 
+  .dogs-page .catalog-section {
+    padding-top: 125px;
+  }
+
+  .adopted-block {
+    margin-top: 70px;
+    padding-top: 60px;
+  }
+
   .filters {
     align-items: stretch;
     flex-direction: column;
@@ -2622,6 +2709,27 @@ a.contact-link:hover {
 
 .admin-row-actions button.danger {
   color: #9b3535;
+}
+
+.admin-dog-row.is-adopted .admin-dog-thumb,
+.admin-dog-row.is-adopted .admin-dog-summary p,
+.admin-dog-row.is-adopted .admin-dog-summary > span {
+  opacity: 0.6;
+}
+
+.admin-adopted-badge {
+  display: inline-block;
+  margin-left: 7px;
+  padding: 2px 7px;
+  color: #6b4a12;
+  background: #fdf0da;
+  border-radius: 999px;
+  font-size: 0.6rem;
+  font-style: normal;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  vertical-align: middle;
 }
 
 .admin-empty {

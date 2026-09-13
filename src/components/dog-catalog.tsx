@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import {
   type ChangeEvent,
   type FormEvent,
@@ -11,16 +12,42 @@ import {
 } from "react";
 import { ArrowIcon, ChatIcon, CloseIcon, FacebookIcon, HeartIcon, InstagramIcon, SearchIcon, TikTokIcon } from "@/components/icons";
 import { deleteDog as deleteDogAction } from "@/lib/dog-actions";
-import { DEFAULT_DOG_DESCRIPTION, DOG_FIELD_LIMITS, type Dog, type DogValues } from "@/lib/dog-content";
+import { DEFAULT_DOG_DESCRIPTION, DOG_FIELD_LIMITS, type Dog, type DogValues, isAdopted } from "@/lib/dog-content";
 import { submitDog, validateDogImageFile } from "@/lib/dog-editor";
 import { getDogImageUrl } from "@/lib/dog-images";
 import { createClient } from "@/lib/supabase/client";
 
-type Filter = "todos" | "peque" | "median" | "grande";
+type Filter = "todos" | "peque" | "median" | "grande" | "favoritos";
 
 type DogCatalogProps = {
   dogs: Dog[];
+  // "preview": vista corta de la landing, sin filtros y con enlace a /perritos.
+  // "full": página /perritos con búsqueda, carga progresiva y adoptados.
+  variant: "preview" | "full";
 };
+
+const PREVIEW_COUNT = 6;
+const PAGE_SIZE = 9;
+const FAVORITES_STORAGE_KEY = "protegiendo-huellas:favoritos";
+const FAVORITES_QUERY = "filtro=favoritos";
+
+// Los favoritos viven solo en el navegador del visitante (sin cuentas).
+function readStoredFavorites() {
+  try {
+    const parsed: unknown = JSON.parse(window.localStorage.getItem(FAVORITES_STORAGE_KEY) ?? "[]");
+    return new Set(Array.isArray(parsed) ? parsed.filter((id): id is number => Number.isInteger(id)) : []);
+  } catch {
+    return new Set<number>();
+  }
+}
+
+function storeFavorites(favorites: Set<number>) {
+  try {
+    window.localStorage.setItem(FAVORITES_STORAGE_KEY, JSON.stringify([...favorites]));
+  } catch {
+    // Almacenamiento bloqueado (modo privado, cuota): los favoritos duran la visita.
+  }
+}
 
 type EditForm = DogValues;
 
@@ -40,12 +67,14 @@ function normalize(value: string) {
   return value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
 }
 
-export function DogCatalog({ dogs: initialDogs }: DogCatalogProps) {
+export function DogCatalog({ dogs: initialDogs, variant }: DogCatalogProps) {
+  const isPreview = variant === "preview";
   const [canEdit, setCanEdit] = useState(false);
   const [dogs, setDogs] = useState(initialDogs);
   const [search, setSearch] = useState("");
   const [activeFilter, setActiveFilter] = useState<Filter>("todos");
-  const [visibleCount, setVisibleCount] = useState(9);
+  const [visibleCount, setVisibleCount] = useState(isPreview ? PREVIEW_COUNT : PAGE_SIZE);
+  const [adoptedVisibleCount, setAdoptedVisibleCount] = useState(PAGE_SIZE);
   const [favorites, setFavorites] = useState<Set<number>>(() => new Set());
   const [selectedDog, setSelectedDog] = useState<Dog | null>(null);
   const [showAdoptionContact, setShowAdoptionContact] = useState(false);
@@ -63,14 +92,39 @@ export function DogCatalog({ dogs: initialDogs }: DogCatalogProps) {
   const editFileInput = useRef<HTMLInputElement>(null);
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  const availableDogs = useMemo(() => dogs.filter((dog) => !isAdopted(dog)), [dogs]);
+
+  // Los adoptados más recientes primero.
+  const adoptedDogs = useMemo(
+    () => dogs
+      .filter(isAdopted)
+      .sort((a, b) => (b.adopted_at ?? "").localeCompare(a.adopted_at ?? "")),
+    [dogs],
+  );
+
+  // La búsqueda y los filtros solo aplican a los perros que buscan hogar.
   const filteredDogs = useMemo(() => {
     const term = normalize(search.trim());
-    return dogs.filter((dog) => {
+    return availableDogs.filter((dog) => {
       const matchesSearch = normalize(dog.name).includes(term);
-      const matchesSize = activeFilter === "todos" || normalize(dog.size).includes(activeFilter);
-      return matchesSearch && matchesSize;
+      const matchesFilter = activeFilter === "todos"
+        || (activeFilter === "favoritos" ? favorites.has(dog.id) : normalize(dog.size).includes(activeFilter));
+      return matchesSearch && matchesFilter;
     });
-  }, [activeFilter, dogs, search]);
+  }, [activeFilter, availableDogs, favorites, search]);
+
+  // Un favorito que fue adoptado deja de contar: solo aplica a perros en adopción.
+  const favoriteCount = useMemo(
+    () => availableDogs.filter((dog) => favorites.has(dog.id)).length,
+    [availableDogs, favorites],
+  );
+
+  useEffect(() => {
+    // Sincroniza con localStorage y con el enlace "Ver mis favoritos" de la landing.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setFavorites(readStoredFavorites());
+    if (!isPreview && window.location.search.includes(FAVORITES_QUERY)) setActiveFilter("favoritos");
+  }, [isPreview]);
 
   useEffect(() => {
     if (!selectedDog && !editingDog) return;
@@ -123,17 +177,16 @@ export function DogCatalog({ dogs: initialDogs }: DogCatalogProps) {
     const dog = dogs.find((item) => item.id === id);
     if (!dog) return;
 
-    setFavorites((current) => {
-      const next = new Set(current);
-      if (next.has(id)) {
-        next.delete(id);
-        showToast(`${dog.name} se quitó de tus favoritos`);
-      } else {
-        next.add(id);
-        showToast(`${dog.name} se guardó en tus favoritos`);
-      }
-      return next;
-    });
+    const next = new Set(favorites);
+    if (next.has(id)) {
+      next.delete(id);
+      showToast(`${dog.name} se quitó de tus favoritos`);
+    } else {
+      next.add(id);
+      showToast(`${dog.name} se guardó en tus favoritos`);
+    }
+    setFavorites(next);
+    storeFavorites(next);
   };
 
   const openDog = (dog: Dog, trigger: HTMLElement) => {
@@ -241,7 +294,61 @@ export function DogCatalog({ dogs: initialDogs }: DogCatalogProps) {
     showToast(`${dog.name} fue eliminado.`);
   };
 
+  const renderCard = (dog: Dog, index: number) => {
+    const adopted = isAdopted(dog);
+    const favorite = favorites.has(dog.id);
+    const imageUrl = getDogImageUrl(dog.image_path);
+    return (
+      <article className={`dog-card revealed${adopted ? " is-adopted" : ""}`} key={dog.id} style={{ animationDelay: `${Math.min(index * 35, 280)}ms` }}>
+        <div className="dog-photo-wrap">
+          <button className="dog-photo-trigger" type="button" aria-label={`Ver ficha de ${dog.name}`} onClick={(event) => openDog(dog, event.currentTarget)}>
+            {imageUrl ? (
+              <Image className="dog-photo" src={imageUrl} alt={`Foto de ${dog.name}, ${adopted ? "perro adoptado" : "perro en adopción"}`} fill sizes="(max-width: 620px) calc(100vw - 28px), (max-width: 1050px) 50vw, 380px" />
+            ) : (
+              <span className="dog-photo-placeholder"><span>Foto pendiente</span><small>Pronto conocerás su carita</small></span>
+            )}
+            <span className={`status-pill${adopted ? " adopted" : ""}`}>{adopted ? "Adoptado" : "Busca hogar"}</span>
+          </button>
+          {!adopted && (
+            <button
+              className={`favorite-button${favorite ? " active" : ""}`}
+              type="button"
+              aria-label={`${favorite ? "Quitar a" : "Guardar a"} ${dog.name} ${favorite ? "de" : "en"} favoritos`}
+              aria-pressed={favorite}
+              onClick={() => toggleFavorite(dog.id)}
+            >
+              <HeartIcon />
+            </button>
+          )}
+        </div>
+        <div className="dog-info">
+          <h3 className="dog-name">{dog.name}</h3>
+          <div className="dog-meta">
+            <span className="meta-tag">{dog.age}</span>
+            <span className="meta-tag">{dog.size}</span>
+          </div>
+          <p className="dog-status">{dog.status}</p>
+          {canEdit && (
+            <div className="dog-admin-actions" aria-label={`Administrar a ${dog.name}`}>
+              <button type="button" onClick={(event) => openEditor(dog, event.currentTarget)}>Editar</button>
+              <button
+                className="danger"
+                type="button"
+                disabled={deletingDogId === dog.id}
+                onClick={() => deleteDog(dog)}
+              >
+                {deletingDogId === dog.id ? "Eliminando…" : "Eliminar"}
+              </button>
+            </div>
+          )}
+          <button className="card-open" type="button" aria-label={`Conocer a ${dog.name}`} onClick={(event) => openDog(dog, event.currentTarget)}><ArrowIcon /></button>
+        </div>
+      </article>
+    );
+  };
+
   const shownDogs = filteredDogs.slice(0, visibleCount);
+  const shownAdoptedDogs = adoptedDogs.slice(0, adoptedVisibleCount);
   const selectedImageUrl = selectedDog ? getDogImageUrl(selectedDog.image_path) : null;
   const editingImageUrl = editingDog ? getDogImageUrl(editingDog.image_path) : null;
   const whatsappMessage = selectedDog
@@ -254,10 +361,18 @@ export function DogCatalog({ dogs: initialDogs }: DogCatalogProps) {
         <div className="section-heading-row" data-reveal="up">
           <div>
             <p className="eyebrow">Encuentra a tu compañero</p>
-            <h2 className="section-title">Conoce a nuestra gran familia</h2>
+            {isPreview ? (
+              <h2 className="section-title">Conoce a nuestra gran familia</h2>
+            ) : (
+              <h1 className="section-title">Conoce a nuestra gran familia</h1>
+            )}
             <p className="section-copy">Cada uno tiene una personalidad distinta, pero todos comparten el mismo sueño: encontrar un hogar seguro y lleno de cariño.</p>
           </div>
-          <p className="catalog-count" aria-live="polite"><strong>{filteredDogs.length}</strong> perritos encontrados</p>
+          {isPreview ? (
+            <p className="catalog-count"><strong>{availableDogs.length}</strong> perritos buscan hogar</p>
+          ) : (
+            <p className="catalog-count" aria-live="polite"><strong>{filteredDogs.length}</strong> perritos encontrados</p>
+          )}
         </div>
 
         {canEdit && (
@@ -270,6 +385,7 @@ export function DogCatalog({ dogs: initialDogs }: DogCatalogProps) {
           </div>
         )}
 
+        {!isPreview && (
         <div className="filters" aria-label="Filtros del catálogo" data-reveal="up">
           <label className="search-box">
             <span className="sr-only">Buscar por nombre</span>
@@ -281,7 +397,7 @@ export function DogCatalog({ dogs: initialDogs }: DogCatalogProps) {
               value={search}
               onChange={(event) => {
                 setSearch(event.target.value);
-                setVisibleCount(9);
+                setVisibleCount(PAGE_SIZE);
               }}
             />
           </label>
@@ -294,80 +410,89 @@ export function DogCatalog({ dogs: initialDogs }: DogCatalogProps) {
                 aria-pressed={activeFilter === filter.value}
                 onClick={() => {
                   setActiveFilter(filter.value);
-                  setVisibleCount(9);
+                  setVisibleCount(PAGE_SIZE);
                 }}
               >
                 {filter.label}
               </button>
             ))}
+            <button
+              className={`chip chip-favorites${activeFilter === "favoritos" ? " active" : ""}`}
+              type="button"
+              aria-pressed={activeFilter === "favoritos"}
+              onClick={() => {
+                setActiveFilter("favoritos");
+                setVisibleCount(PAGE_SIZE);
+              }}
+            >
+              <HeartIcon /> Favoritos ({favoriteCount})
+            </button>
           </div>
         </div>
+        )}
 
         {/* La grilla queda siempre montada: ScrollReveals solo observa los
             elementos presentes al cargar, y una grilla recreada tras una
             búsqueda sin resultados quedaría invisible. */}
         <div className="dogs-grid" data-reveal="up">
-          {shownDogs.map((dog, index) => {
-            const favorite = favorites.has(dog.id);
-            const imageUrl = getDogImageUrl(dog.image_path);
-            return (
-              <article className="dog-card revealed" key={dog.id} style={{ animationDelay: `${Math.min(index * 35, 280)}ms` }}>
-                <div className="dog-photo-wrap">
-                  <button className="dog-photo-trigger" type="button" aria-label={`Ver ficha de ${dog.name}`} onClick={(event) => openDog(dog, event.currentTarget)}>
-                    {imageUrl ? (
-                      <Image className="dog-photo" src={imageUrl} alt={`Foto de ${dog.name}, perro en adopción`} fill sizes="(max-width: 620px) calc(100vw - 28px), (max-width: 1050px) 50vw, 380px" />
-                    ) : (
-                      <span className="dog-photo-placeholder"><span>Foto pendiente</span><small>Pronto conocerás su carita</small></span>
-                    )}
-                    <span className="status-pill">Busca hogar</span>
-                  </button>
-                  <button
-                    className={`favorite-button${favorite ? " active" : ""}`}
-                    type="button"
-                    aria-label={`${favorite ? "Quitar a" : "Guardar a"} ${dog.name} ${favorite ? "de" : "en"} favoritos`}
-                    aria-pressed={favorite}
-                    onClick={() => toggleFavorite(dog.id)}
-                  >
-                    <HeartIcon />
-                  </button>
-                </div>
-                <div className="dog-info">
-                  <h3 className="dog-name">{dog.name}</h3>
-                  <div className="dog-meta">
-                    <span className="meta-tag">{dog.age}</span>
-                    <span className="meta-tag">{dog.size}</span>
-                  </div>
-                  <p className="dog-status">{dog.status}</p>
-                  {canEdit && (
-                    <div className="dog-admin-actions" aria-label={`Administrar a ${dog.name}`}>
-                      <button type="button" onClick={(event) => openEditor(dog, event.currentTarget)}>Editar</button>
-                      <button
-                        className="danger"
-                        type="button"
-                        disabled={deletingDogId === dog.id}
-                        onClick={() => deleteDog(dog)}
-                      >
-                        {deletingDogId === dog.id ? "Eliminando…" : "Eliminar"}
-                      </button>
-                    </div>
-                  )}
-                  <button className="card-open" type="button" aria-label={`Conocer a ${dog.name}`} onClick={(event) => openDog(dog, event.currentTarget)}><ArrowIcon /></button>
-                </div>
-              </article>
-            );
-          })}
+          {shownDogs.map(renderCard)}
         </div>
 
         {shownDogs.length === 0 && (
           <div className="empty-state visible">
-            <strong>No encontramos coincidencias</strong>
-            <span>Prueba otro nombre o selecciona un tamaño diferente.</span>
+            {activeFilter === "favoritos" && favoriteCount === 0 ? (
+              <>
+                <strong>Todavía no tienes favoritos</strong>
+                <span>Toca el corazón de un perrito para guardarlo aquí.</span>
+              </>
+            ) : (
+              <>
+                <strong>No encontramos coincidencias</strong>
+                <span>Prueba otro nombre o selecciona un filtro diferente.</span>
+              </>
+            )}
           </div>
         )}
 
-        {filteredDogs.length > visibleCount && (
-          <div className="catalog-actions">
-            <button className="btn btn-outline" type="button" onClick={() => setVisibleCount((count) => count + 9)}>Ver más perritos</button>
+        {isPreview ? (
+          (availableDogs.length > PREVIEW_COUNT || favoriteCount > 0) && (
+            <div className="catalog-actions">
+              {availableDogs.length > PREVIEW_COUNT && (
+                <Link className="btn btn-outline" href="/perritos">Ver más perritos <ArrowIcon /></Link>
+              )}
+              {favoriteCount > 0 && (
+                <Link className="btn btn-outline btn-favorites" href={`/perritos?${FAVORITES_QUERY}`}><HeartIcon /> Ver mis favoritos ({favoriteCount})</Link>
+              )}
+            </div>
+          )
+        ) : (
+          filteredDogs.length > visibleCount && (
+            <div className="catalog-actions">
+              <button className="btn btn-outline" type="button" onClick={() => setVisibleCount((count) => count + PAGE_SIZE)}>Ver más perritos</button>
+            </div>
+          )
+        )}
+
+        {!isPreview && adoptedDogs.length > 0 && (
+          <div className="adopted-block" id="adoptados">
+            <div className="section-heading-row" data-reveal="up">
+              <div>
+                <p className="eyebrow">Historias con final feliz</p>
+                <h2 className="section-title">Ya encontraron un hogar</h2>
+                <p className="section-copy">Estos perritos llegaron a la fundación esperando una oportunidad y hoy comparten su vida con una familia que los quiere. Gracias a cada persona que abrió las puertas de su casa y a quienes ayudaron a compartir sus historias.</p>
+              </div>
+              <p className="catalog-count"><strong>{adoptedDogs.length}</strong> {adoptedDogs.length === 1 ? "perrito adoptado" : "perritos adoptados"}</p>
+            </div>
+
+            <div className="dogs-grid adopted-grid" data-reveal="up">
+              {shownAdoptedDogs.map(renderCard)}
+            </div>
+
+            {adoptedDogs.length > adoptedVisibleCount && (
+              <div className="catalog-actions">
+                <button className="btn btn-outline" type="button" onClick={() => setAdoptedVisibleCount((count) => count + PAGE_SIZE)}>Ver más adoptados</button>
+              </div>
+            )}
           </div>
         )}
       </div>
@@ -385,7 +510,19 @@ export function DogCatalog({ dogs: initialDogs }: DogCatalogProps) {
               )}
             </div>
             <div className={`modal-content${showAdoptionContact ? " adoption-contact-view" : ""}`}>
-              {!showAdoptionContact ? (
+              {isAdopted(selectedDog) ? (
+                <>
+                  <p className="eyebrow">Ya tiene un hogar</p>
+                  <h2 id="modalName">{selectedDog.name}</h2>
+                  <p className="modal-description">{selectedDog.description || DEFAULT_DOG_DESCRIPTION}</p>
+                  <div className="modal-facts">
+                    <div className="modal-fact"><strong>Edad</strong><span>{selectedDog.age}</span></div>
+                    <div className="modal-fact"><strong>Tamaño</strong><span>{selectedDog.size}</span></div>
+                    <div className="modal-fact modal-fact-wide"><strong>Estado</strong><span>{selectedDog.status}</span></div>
+                  </div>
+                  <p className="modal-adopted-note"><strong>{selectedDog.name} ya encontró una familia.</strong> Todavía hay muchos perritos esperando su oportunidad.</p>
+                </>
+              ) : !showAdoptionContact ? (
                 <>
                   <p className="eyebrow">Busca un hogar</p>
                   <h2 id="modalName">{selectedDog.name}</h2>

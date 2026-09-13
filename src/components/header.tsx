@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Brand } from "@/components/brand";
 import { MenuIcon } from "@/components/icons";
@@ -30,10 +31,10 @@ export function Header() {
       <div className="container nav">
         <Brand onClick={closeMenu} />
         <nav className={`nav-links${menuOpen ? " open" : ""}`} id="navLinks" aria-label="Navegación principal">
-          <a href="#adopta" onClick={closeMenu}>Adopta</a>
-          <a href="#proceso" onClick={closeMenu}>Cómo adoptar</a>
-          <a href="#nosotros" onClick={closeMenu}>La Fundación</a>
-          <a className="btn btn-primary" href="#donaciones" onClick={closeMenu}>Quiero donar</a>
+          <Link href="/#adopta" onClick={closeMenu}>Adopta</Link>
+          <Link href="/#proceso" onClick={closeMenu}>Cómo adoptar</Link>
+          <Link href="/#nosotros" onClick={closeMenu}>La Fundación</Link>
+          <Link className="btn btn-primary" href="/#donaciones" onClick={closeMenu}>Quiero donar</Link>
         </nav>
         <button
           className="menu-button"

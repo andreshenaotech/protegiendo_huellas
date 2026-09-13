@@ -22,6 +22,10 @@ export const DOG_FIELD_LIMITS: Record<keyof DogValues, number> = {
 
 export const DOGS_CACHE_TAG = "dogs";
 
+export function isAdopted(dog: Pick<Dog, "adopted_at">) {
+  return Boolean(dog.adopted_at);
+}
+
 export function normalizeDogValues(values: DogValues): DogValues {
   return {
     name: values.name.trim(),

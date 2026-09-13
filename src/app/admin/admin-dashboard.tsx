@@ -11,8 +11,8 @@ import {
   useState,
 } from "react";
 import type { CurrentAdmin } from "@/lib/auth";
-import { deleteDog as deleteDogAction, removeDogImage } from "@/lib/dog-actions";
-import { DOG_FIELD_LIMITS, type Dog, type DogValues } from "@/lib/dog-content";
+import { deleteDog as deleteDogAction, removeDogImage, setDogAdopted } from "@/lib/dog-actions";
+import { DOG_FIELD_LIMITS, type Dog, type DogValues, isAdopted } from "@/lib/dog-content";
 import { submitDog, validateDogImageFile } from "@/lib/dog-editor";
 import { getDogImageUrl } from "@/lib/dog-images";
 import { createClient } from "@/lib/supabase/client";
@@ -68,12 +68,14 @@ export function AdminDashboard({ admin, initialDogs }: AdminDashboardProps) {
     const term = search.trim().toLocaleLowerCase("es");
     if (!term) return dogs;
     return dogs.filter((dog) =>
-      [dog.name, dog.age, dog.size, dog.status]
+      [dog.name, dog.age, dog.size, dog.status, isAdopted(dog) ? "adoptado" : "en adopción"]
         .join(" ")
         .toLocaleLowerCase("es")
         .includes(term),
     );
   }, [dogs, search]);
+
+  const availableCount = dogs.filter((dog) => !isAdopted(dog)).length;
 
   const editingDog = editingId === null
     ? null
@@ -188,6 +190,31 @@ export function AdminDashboard({ admin, initialDogs }: AdminDashboardProps) {
     setDogNotice({ type: "success", text: `${dog.name} fue eliminado.` });
   };
 
+  const toggleAdopted = async (dog: Dog) => {
+    const adopt = !isAdopted(dog);
+    const confirmed = window.confirm(adopt
+      ? `¿Marcar a ${dog.name} como adoptado? Pasará a la sección "Ya encontraron un hogar".`
+      : `¿Devolver a ${dog.name} a la lista de perritos en adopción?`);
+    if (!confirmed) return;
+
+    setDogBusy(true);
+    setDogNotice(null);
+    const result = await setDogAdopted(dog.id, adopt).catch(() => null);
+    setDogBusy(false);
+
+    if (!result?.ok || !result.dog) {
+      setDogNotice({ type: "error", text: result && !result.ok ? result.error : "No fue posible actualizar el estado de adopción." });
+      return;
+    }
+
+    const updatedDog = result.dog;
+    setDogs((current) => current.map((item) => item.id === updatedDog.id ? updatedDog : item));
+    setDogNotice({
+      type: "success",
+      text: adopt ? `${dog.name} fue marcado como adoptado.` : `${dog.name} volvió a la lista de adopción.`,
+    });
+  };
+
   const createAdmin = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setAdminNotice(null);
@@ -275,7 +302,7 @@ export function AdminDashboard({ admin, initialDogs }: AdminDashboardProps) {
             <h1>Historias que esperan una familia</h1>
             <p>Actualiza la información y las fotografías que aparecen en la landing.</p>
           </div>
-          <div className="admin-count-card"><strong>{dogs.length}</strong><span>perritos publicados</span></div>
+          <div className="admin-count-card"><strong>{availableCount}</strong><span>en adopción · {dogs.length - availableCount} adoptados</span></div>
         </section>
 
         <div className="admin-workspace">
@@ -348,18 +375,20 @@ export function AdminDashboard({ admin, initialDogs }: AdminDashboardProps) {
             <div className="admin-dog-list">
               {filteredDogs.map((dog) => {
                 const imageUrl = getDogImageUrl(dog.image_path);
+                const adopted = isAdopted(dog);
                 return (
-                  <article className="admin-dog-row" key={dog.id}>
+                  <article className={`admin-dog-row${adopted ? " is-adopted" : ""}`} key={dog.id}>
                     <div className={`admin-dog-thumb${imageUrl ? " has-image" : ""}`}>
                       {imageUrl ? <Image src={imageUrl} alt={`Foto de ${dog.name}`} fill sizes="76px" /> : <span>Foto<br />pendiente</span>}
                     </div>
                     <div className="admin-dog-summary">
-                      <h3>{dog.name}</h3>
+                      <h3>{dog.name}{adopted && <em className="admin-adopted-badge">Adoptado</em>}</h3>
                       <p>{dog.age} · {dog.size}</p>
                       <span>{dog.status}</span>
                     </div>
                     <div className="admin-row-actions">
                       <button type="button" onClick={() => startEditing(dog)} disabled={dogBusy}>Editar</button>
+                      <button type="button" onClick={() => toggleAdopted(dog)} disabled={dogBusy}>{adopted ? "Devolver a adopción" : "Marcar adoptado"}</button>
                       <button className="danger" type="button" onClick={() => deleteDog(dog)} disabled={dogBusy}>Eliminar</button>
                     </div>
                   </article>

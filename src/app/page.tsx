@@ -4,6 +4,7 @@ import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
 import { ArrowIcon, ChatIcon, EmailIcon, FacebookIcon, HeartIcon, InstagramIcon, PhoneIcon, PinIcon, SearchIcon, TikTokIcon } from "@/components/icons";
 import { ScrollReveals } from "@/components/scroll-reveals";
+import { isAdopted } from "@/lib/dog-content";
 import { getPublishedDogs } from "@/lib/dogs";
 
 // Página estática con revalidación: las ediciones del admin invalidan la caché
@@ -11,7 +12,7 @@ import { getPublishedDogs } from "@/lib/dogs";
 export const revalidate = 300;
 
 export default async function Home() {
-  const dogs = await getPublishedDogs();
+  const dogs = (await getPublishedDogs()).filter((dog) => !isAdopted(dog));
 
   return (
     <>
@@ -54,13 +55,13 @@ export default async function Home() {
 
         <div className="container stats-wrap" aria-label="Cifras de adopción" data-reveal="up">
           <div className="stats">
-            <div className="stat"><strong>{dogs.length}</strong><span>Perritos publicados</span></div>
+            <div className="stat"><strong>{dogs.length}</strong><span>Perritos en adopción</span></div>
             <div className="stat"><strong>100%</strong><span>Esterilizados o castrados</span></div>
             <div className="stat"><strong>Paipa</strong><span>Boyacá, Colombia</span></div>
           </div>
         </div>
 
-        <DogCatalog dogs={dogs} />
+        <DogCatalog dogs={dogs} variant="preview" />
 
         <section className="process-section" id="proceso">
           <div className="container">

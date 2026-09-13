@@ -65,6 +65,7 @@ export type Database = {
       }
       dogs: {
         Row: {
+          adopted_at: string | null
           age: string
           created_at: string
           created_by: string | null
@@ -78,6 +79,7 @@ export type Database = {
           updated_by: string | null
         }
         Insert: {
+          adopted_at?: string | null
           age: string
           created_at?: string
           created_by?: string | null
@@ -91,6 +93,7 @@ export type Database = {
           updated_by?: string | null
         }
         Update: {
+          adopted_at?: string | null
           age?: string
           created_at?: string
           created_by?: string | null

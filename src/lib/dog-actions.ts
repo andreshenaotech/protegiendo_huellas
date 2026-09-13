@@ -110,6 +110,25 @@ export async function removeDogImage(id: number): Promise<DogActionResult> {
   return { ok: true, dog };
 }
 
+export async function setDogAdopted(id: number, adopted: boolean): Promise<DogActionResult> {
+  if (!await getCurrentAdmin()) return { ok: false, error: "Tu sesión expiró. Vuelve a iniciar sesión." };
+  const supabase = await createClient();
+
+  const { data: dog, error } = await supabase
+    .from("dogs")
+    .update({ adopted_at: adopted ? new Date().toISOString() : null })
+    .eq("id", id)
+    .select("*")
+    .single();
+
+  if (error || !dog) {
+    return { ok: false, error: adopted ? "No fue posible marcarlo como adoptado." : "No fue posible devolverlo a adopción." };
+  }
+
+  updateTag(DOGS_CACHE_TAG);
+  return { ok: true, dog };
+}
+
 export async function deleteDog(id: number): Promise<DogActionResult> {
   if (!await getCurrentAdmin()) return { ok: false, error: "Tu sesión expiró. Vuelve a iniciar sesión." };
   const supabase = await createClient();
