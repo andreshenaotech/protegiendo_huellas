@@ -12,7 +12,9 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="es">
+    // data-scroll-behavior: Next desactiva el scroll suave durante los cambios
+    // de página para que la nueva página abra arriba.
+    <html lang="es" data-scroll-behavior="smooth">
       <body>{children}</body>
     </html>
   );

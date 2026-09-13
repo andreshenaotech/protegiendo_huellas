@@ -12,6 +12,7 @@ Sitio web de la Fundación Protegiendo Huellas (Paipa, Boyacá, Colombia) para d
 - **Sección de adoptados** ("Ya encontraron un hogar") con las historias de los perritos que ya tienen familia. La búsqueda y los filtros solo muestran los que siguen en adopción.
 - **Ficha detallada** de cada perro con su historia y un acceso directo a WhatsApp con un mensaje prellenado para iniciar el proceso de adopción.
 - **Favoritos** guardados en el navegador del visitante (sin cuentas), con filtro "Favoritos" en `/perritos` y acceso "Ver mis favoritos" desde la landing.
+- **Página `/apadrinamiento`** con los programas Padrino Solidario (pasos, beneficios, planes mensuales y aporte para esterilizaciones) y Padrino de Ingreso.
 - Secciones informativas: proceso de adopción, la fundación, datos para donaciones, redes sociales y contacto.
 - Diseño responsive y accesible (navegación por teclado, textos alternativos, enlaces de salto).
 
@@ -96,6 +97,7 @@ Puede ejecutarse de nuevo para asegurar el rol `superadmin`.
 
 - `src/app/page.tsx`: landing pública.
 - `src/app/perritos/page.tsx`: catálogo completo y perritos adoptados.
+- `src/app/apadrinamiento/page.tsx`: programas de apadrinamiento (contenido estático).
 - `src/app/admin`: login y panel administrativo.
 - `src/app/api`: creación de administradores y health check.
 - `src/components`: componentes de la landing, incluido el catálogo.

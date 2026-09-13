@@ -60,6 +60,22 @@ export function TikTokIcon() {
   return <svg {...iconProps}><path d="M15 3v11.5a4.5 4.5 0 1 1-4-4.47" /><path d="M15 3c.5 3 2.2 4.8 5 5" /></svg>;
 }
 
+export function BowlIcon() {
+  return <svg {...iconProps}><path d="M3 11h18a9 9 0 0 1-18 0Z" /><path d="M8 7c0-1.4 1-1.8 1-3.2M12 7c0-1.4 1-1.8 1-3.2M16 7c0-1.4 1-1.8 1-3.2" /></svg>;
+}
+
+export function StethoscopeIcon() {
+  return <svg {...iconProps}><path d="M5 3v6a4 4 0 0 0 8 0V3" /><path d="M9 13v2a5 5 0 0 0 10 0v-2" /><circle cx="19" cy="11" r="2" /></svg>;
+}
+
+export function SyringeIcon() {
+  return <svg {...iconProps}><path d="m18 2 4 4M16 4l4 4M18 6 8 16l-3 1 1-3L16 4M11 9l2 2M8 12l2 2M5 17l-3 3" /></svg>;
+}
+
+export function PillIcon() {
+  return <svg {...iconProps}><path d="M10.5 20.5a4.95 4.95 0 0 1-7-7l10-10a4.95 4.95 0 0 1 7 7Z" /><path d="m8.5 8.5 7 7" /></svg>;
+}
+
 export function PinIcon() {
   return <svg {...iconProps}><path d="M21 10c0 7-9 12-9 12S3 17 3 10a9 9 0 1 1 18 0Z" /><circle cx="12" cy="10" r="3" /></svg>;
 }

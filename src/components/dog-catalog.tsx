@@ -28,6 +28,9 @@ type DogCatalogProps = {
 
 const PREVIEW_COUNT = 6;
 const PAGE_SIZE = 9;
+// Adoptados: una hilera al inicio y dos hileras más por cada "Ver más".
+const ADOPTED_INITIAL_COUNT = 3;
+const ADOPTED_PAGE_SIZE = 6;
 const FAVORITES_STORAGE_KEY = "protegiendo-huellas:favoritos";
 const FAVORITES_QUERY = "filtro=favoritos";
 
@@ -74,7 +77,7 @@ export function DogCatalog({ dogs: initialDogs, variant }: DogCatalogProps) {
   const [search, setSearch] = useState("");
   const [activeFilter, setActiveFilter] = useState<Filter>("todos");
   const [visibleCount, setVisibleCount] = useState(isPreview ? PREVIEW_COUNT : PAGE_SIZE);
-  const [adoptedVisibleCount, setAdoptedVisibleCount] = useState(PAGE_SIZE);
+  const [adoptedVisibleCount, setAdoptedVisibleCount] = useState(ADOPTED_INITIAL_COUNT);
   const [favorites, setFavorites] = useState<Set<number>>(() => new Set());
   const [selectedDog, setSelectedDog] = useState<Dog | null>(null);
   const [showAdoptionContact, setShowAdoptionContact] = useState(false);
@@ -356,7 +359,7 @@ export function DogCatalog({ dogs: initialDogs, variant }: DogCatalogProps) {
     : "";
 
   return (
-    <section className="catalog-section" id="adopta">
+    <section className={`catalog-section${isPreview ? " catalog-preview" : ""}`} id="adopta">
       <div className="container">
         <div className="section-heading-row" data-reveal="up">
           <div>
@@ -368,9 +371,7 @@ export function DogCatalog({ dogs: initialDogs, variant }: DogCatalogProps) {
             )}
             <p className="section-copy">Cada uno tiene una personalidad distinta, pero todos comparten el mismo sueño: encontrar un hogar seguro y lleno de cariño.</p>
           </div>
-          {isPreview ? (
-            <p className="catalog-count"><strong>{availableDogs.length}</strong> perritos buscan hogar</p>
-          ) : (
+          {!isPreview && (
             <p className="catalog-count" aria-live="polite"><strong>{filteredDogs.length}</strong> perritos encontrados</p>
           )}
         </div>
@@ -481,7 +482,10 @@ export function DogCatalog({ dogs: initialDogs, variant }: DogCatalogProps) {
                 <h2 className="section-title">Ya encontraron un hogar</h2>
                 <p className="section-copy">Estos perritos llegaron a la fundación esperando una oportunidad y hoy comparten su vida con una familia que los quiere. Gracias a cada persona que abrió las puertas de su casa y a quienes ayudaron a compartir sus historias.</p>
               </div>
-              <p className="catalog-count"><strong>{adoptedDogs.length}</strong> {adoptedDogs.length === 1 ? "perrito adoptado" : "perritos adoptados"}</p>
+              <p className="adopted-milestone">
+                <strong>+1.000</strong>
+                <span>perritos han encontrado una familia desde que empezamos este camino en 2019</span>
+              </p>
             </div>
 
             <div className="dogs-grid adopted-grid" data-reveal="up">
@@ -490,7 +494,7 @@ export function DogCatalog({ dogs: initialDogs, variant }: DogCatalogProps) {
 
             {adoptedDogs.length > adoptedVisibleCount && (
               <div className="catalog-actions">
-                <button className="btn btn-outline" type="button" onClick={() => setAdoptedVisibleCount((count) => count + PAGE_SIZE)}>Ver más adoptados</button>
+                <button className="btn btn-outline" type="button" onClick={() => setAdoptedVisibleCount((count) => count + ADOPTED_PAGE_SIZE)}>Ver más adoptados</button>
               </div>
             )}
           </div>

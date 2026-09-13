@@ -31,7 +31,8 @@ export function Header() {
       <div className="container nav">
         <Brand onClick={closeMenu} />
         <nav className={`nav-links${menuOpen ? " open" : ""}`} id="navLinks" aria-label="Navegación principal">
-          <Link href="/#adopta" onClick={closeMenu}>Adopta</Link>
+          <Link href="/perritos" onClick={closeMenu}>Adopta</Link>
+          <Link href="/apadrinamiento" onClick={closeMenu}>Apadrinamiento</Link>
           <Link href="/#proceso" onClick={closeMenu}>Cómo adoptar</Link>
           <Link href="/#nosotros" onClick={closeMenu}>La Fundación</Link>
           <Link className="btn btn-primary" href="/#donaciones" onClick={closeMenu}>Quiero donar</Link>
