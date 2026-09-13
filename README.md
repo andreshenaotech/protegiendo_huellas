@@ -1,208 +1,69 @@
 # Protegiendo Huellas
 
-Landing page de la Fundación Protegiendo Huellas migrada a Next.js con App Router, React y TypeScript.
+Sitio web de la Fundación Protegiendo Huellas (Paipa, Boyacá, Colombia) para dar a conocer a los perros en adopción, recibir donaciones y conectar a las familias interesadas con la fundación. Incluye un panel administrativo para que el equipo mantenga el catálogo actualizado sin tocar código.
+
+## Funcionalidades
+
+### Sitio público
+
+- **Catálogo de perros en adopción** con foto, edad, tamaño y estado de salud (esterilización o castración).
+- **Búsqueda por nombre y filtros por tamaño**, con carga progresiva de resultados.
+- **Ficha detallada** de cada perro con su historia y un acceso directo a WhatsApp con un mensaje prellenado para iniciar el proceso de adopción.
+- **Favoritos** durante la visita para recordar los perros que más gustaron.
+- Secciones informativas: proceso de adopción, la fundación, datos para donaciones, redes sociales y contacto.
+- Diseño responsive y accesible (navegación por teclado, textos alternativos, enlaces de salto).
+
+### Panel administrativo (`/admin`)
+
+- Inicio de sesión con correo y contraseña.
+- Agregar, editar y eliminar perros, con subida de fotografía.
+- Edición rápida desde la propia landing cuando hay una sesión administrativa activa.
+- Las fotos se redimensionan y comprimen automáticamente en el navegador antes de subirse.
+- Cambio de contraseña de la cuenta actual.
+- Roles:
+  - **superadmin**: gestiona perros y puede crear nuevas cuentas administrativas.
+  - **admin**: gestiona perros, pero no puede crear cuentas.
+
+## Tecnología
+
+- [Next.js 16](https://nextjs.org) (App Router) con React 19 y TypeScript.
+- [Supabase](https://supabase.com): autenticación, base de datos Postgres y almacenamiento de imágenes.
+- CSS propio, sin frameworks de estilos.
+
+## Cómo funciona
+
+- **Rendimiento:** la página pública se sirve desde caché y se regenera en segundo plano cada 5 minutos, por lo que las visitas no consultan la base de datos una por una. Cuando un administrador guarda un cambio desde la app, la caché se invalida al instante.
+- **Disponibilidad:** si la base de datos no responde, el sitio sigue mostrando la última versión válida del catálogo.
+- **Seguridad:** los permisos se aplican en la base de datos con Row Level Security. Cualquier visitante puede leer el catálogo, pero solo las cuentas registradas como administradoras pueden crear, editar o borrar perros e imágenes. Las escrituras pasan por server actions que vuelven a verificar la sesión. La clave `service_role` de Supabase se usa exclusivamente en el servidor y solo para crear cuentas administrativas.
+- **Monitoreo:** `GET /api/health` responde si la base de datos es accesible.
 
 ## Desarrollo local
 
+Requisitos: Node.js 20 o superior y un proyecto de Supabase.
+
 ```bash
 npm install
+cp .env.example .env.local   # completar con los datos del proyecto de Supabase
 npm run dev
 ```
 
-Abre [http://localhost:3000](http://localhost:3000) en el navegador.
-
-## Aislamiento obligatorio de cuentas
-
-Este proyecto comparte el equipo con otras cuentas de GitHub y Supabase. El
-aislamiento se realiza a nivel de repositorio y mediante un perfil nombrado de
-Supabase. Ninguna persona o agente de IA debe sustituir esta configuración por
-credenciales globales.
-
-### Fuente de verdad
-
-| Servicio | Configuración autorizada |
-| --- | --- |
-| GitHub | Cuenta `andreshenaotech` |
-| Repositorio | `git@github.com:andreshenaotech/protegiendo_huellas.git` |
-| Autor de commits | `andres <andreshenao.tech@gmail.com>` |
-| SSH en este equipo | `C:/Users/crypt/.ssh/id_ed25519_huellas` |
-| Supabase | Proyecto `protegiendo_huellas` |
-| Supabase project ref | `irwdfcacgpznmvjofszq` |
-| Supabase URL | `https://irwdfcacgpznmvjofszq.supabase.co` |
-| Perfil aislado de Supabase CLI | `protegiendo-huellas` |
-| Nombre identificativo del token | `protegiendo-huellas` |
-
-Si cualquier comando muestra otro propietario de GitHub, otro remoto, otro
-project ref o proyectos distintos, se debe **detener la operación**. No se debe
-intentar corregir, enlazar, migrar o publicar hasta volver a verificar la cuenta.
-
-### Reglas para personas y agentes de IA
-
-1. Leer esta sección antes de ejecutar `git push`, comandos remotos de Supabase,
-   SQL, migraciones o cambios de autenticación.
-2. No ejecutar `git config --global` para este proyecto. La identidad y la clave
-   SSH se configuran únicamente con `--local`.
-3. No eliminar, renombrar ni sobrescribir otras claves dentro de `~/.ssh`. No
-   modificar `~/.ssh/config` sin autorización expresa del usuario.
-4. No utilizar una sesión global de `gh`, Supabase CLI, MCP o cualquier conector
-   solo porque ya esté autenticada. Primero debe verificarse que corresponde a
-   la fuente de verdad de esta sección.
-5. Todos los comandos de Supabase CLI que accedan a la plataforma deben
-   ejecutarse con `--profile protegiendo-huellas`. Este perfil contiene la
-   sesión aislada creada para esta cuenta.
-6. No ejecutar `supabase db push`, migraciones, SQL remoto, generación de tipos
-   enlazada ni cambios de Auth/Storage hasta confirmar el project ref exacto.
-7. No leer, imprimir, registrar ni pegar en un chat el contenido de `.env.local`.
-   Nunca colocar valores reales en `.env.example`.
-8. Nunca usar una clave `service_role`/`secret` con el prefijo `NEXT_PUBLIC_` ni
-   desde componentes del navegador. Esas claves omiten RLS y son exclusivamente
-   de servidor.
-
-### GitHub: configuración aislada
-
-La configuración que fuerza la identidad correcta vive en `.git/config`, no en
-la configuración global del equipo:
-
-```powershell
-git config --local user.name "andres"
-git config --local user.email "andreshenao.tech@gmail.com"
-git config --local core.sshCommand "ssh -i C:/Users/crypt/.ssh/id_ed25519_huellas -o IdentitiesOnly=yes"
-git remote set-url origin git@github.com:andreshenaotech/protegiendo_huellas.git
-```
-
-Antes de cada primer push realizado por una nueva persona o agente, verificar:
-
-```powershell
-git config --local --get user.name
-git config --local --get user.email
-git config --local --get core.sshCommand
-git remote get-url origin
-git ls-remote origin
-```
-
-Los resultados deben coincidir con la tabla **Fuente de verdad**. `git push`
-utilizará automáticamente `id_ed25519_huellas` por medio de `core.sshCommand`,
-sin depender de la clave SSH predeterminada ni de otra cuenta de GitHub.
-
-### Supabase: sesión y proyecto aislados
-
-La CLI está instalada y fijada como dependencia del proyecto. Se debe ejecutar
-con `npx supabase` para usar esa versión y no una instalación global.
-
-Supabase CLI admite perfiles nombrados para conectarse a la API. En este
-repositorio se usa exclusivamente `protegiendo-huellas`; no se debe ejecutar un
-comando remoto sin ese perfil porque podría tomar otra sesión guardada en el
-equipo.
-
-La otra cuenta conectada mediante MCP/conector debe permanecer intacta. Para
-este repositorio se usa la sesión CLI de `andreshenaotech` y se impide operar
-sobre otro proyecto mediante la comprobación obligatoria del project ref.
-
-El inicio de sesión correcto se realiza en una terminal interactiva y se guarda
-en el perfil aislado:
-
-```powershell
-npx supabase login --name protegiendo-huellas --profile protegiendo-huellas --output-format text --agent no
-```
-
-El login cambia únicamente ese perfil de Supabase CLI; no modifica ni elimina
-proyectos de ninguna cuenta. No usa la clave `anon`, la clave `service_role` ni
-`.env.local`. Para automatización también se puede inyectar un
-`SUPABASE_ACCESS_TOKEN` específico desde un gestor seguro de secretos, nunca
-desde el repositorio.
-
-Antes de enlazar o realizar cualquier operación remota:
-
-```powershell
-$expectedProjectRef = "irwdfcacgpznmvjofszq"
-$linkedProjectRef = (Get-Content supabase/.temp/project-ref -Raw).Trim()
-
-if ($linkedProjectRef -ne $expectedProjectRef) {
-  throw "Proyecto Supabase incorrecto: $linkedProjectRef"
-}
-
-npx supabase projects list --profile protegiendo-huellas --output-format text --agent no
-npx supabase migration list --linked --profile protegiendo-huellas --output-format text --agent no
-```
-
-La lista debe contener el proyecto `protegiendo_huellas` con ref
-`irwdfcacgpznmvjofszq` marcado como `LINKED`. Si aparecen otros proyectos o el
-ref esperado no aparece, detenerse sin ejecutar SQL ni migraciones. El
-directorio `supabase/.temp` es local y está ignorado por Git.
-
-Antes de aplicar migraciones, comprobar el plan sin escrituras:
-
-```powershell
-npx supabase db push --dry-run --linked --profile protegiendo-huellas --output-format text --agent no
-```
-
-Solo después de validar la salida del dry-run se puede ejecutar el push real:
-
-```powershell
-npx supabase db push --linked --profile protegiendo-huellas --output-format text --agent no
-```
-
-No se debe usar un conector Supabase o MCP previamente autenticado si no permite
-seleccionar y verificar explícitamente este project ref. En caso de duda, usar
-la sesión CLI documentada aquí y limitarse primero a una consulta de lectura.
+Abre [http://localhost:3000](http://localhost:3000).
 
 ### Variables de entorno
 
-Crear el archivo local a partir de la plantilla:
+| Variable | Uso |
+| --- | --- |
+| `NEXT_PUBLIC_SUPABASE_URL` | URL del proyecto de Supabase. |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Clave pública (o `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`). Puede exponerse al navegador; el acceso real lo controla RLS. |
+| `SUPABASE_SERVICE_ROLE_KEY` | Solo servidor. Necesaria para crear administradores. Nunca debe llevar el prefijo `NEXT_PUBLIC_` ni subirse al repositorio. |
 
-```powershell
-Copy-Item .env.example .env.local
-```
+### Base de datos
 
-La aplicación cliente necesita únicamente:
+El esquema, las políticas de seguridad, el bucket de imágenes y los datos iniciales están versionados en `supabase/migrations/` y se aplican con la CLI de Supabase (`npx supabase db push`, siempre con `--dry-run` primero).
 
-```dotenv
-NEXT_PUBLIC_SUPABASE_URL=https://irwdfcacgpznmvjofszq.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=<clave pública del proyecto>
-```
+### Primera cuenta administrativa
 
-Las rutas protegidas del servidor que crean administradores también necesitan:
-
-```dotenv
-SUPABASE_SERVICE_ROLE_KEY=<clave service role del proyecto>
-```
-
-Esta clave nunca debe llevar el prefijo `NEXT_PUBLIC_`, importarse desde un
-componente cliente ni imprimirse en terminal. El navegador realiza el CRUD de
-perros con la clave pública y la sesión del admin; RLS decide si la operación
-está permitida.
-
-`NEXT_PUBLIC_SUPABASE_ANON_KEY` es la clave pública heredada y puede exponerse al
-navegador; el acceso real a los datos debe protegerse con permisos y políticas
-RLS. Para código nuevo, Supabase recomienda migrar a una clave `publishable`.
-
-`.env.local` está ignorado por Git. Antes de un commit o push se debe comprobar:
-
-```powershell
-git check-ignore -v .env.local supabase/.temp/project-ref
-git diff --cached
-```
-
-No agregar `SUPABASE_ACCESS_TOKEN`, la contraseña de Postgres ni claves
-`service_role`/`secret` salvo que una función exclusivamente de servidor las
-necesite de forma explícita. Los secretos reales deben permanecer fuera del
-repositorio y nunca deben copiarse a `.env.example`.
-
-Referencias: [Supabase CLI login](https://supabase.com/docs/reference/cli/supabase-login)
-y [API keys de Supabase](https://supabase.com/docs/guides/getting-started/api-keys).
-
-## Panel administrativo
-
-- `/admin/login`: inicio de sesión para administradores.
-- `/admin`: panel protegido para agregar, editar y eliminar perros, subir una
-  imagen y cambiar la contraseña de la cuenta actual.
-- Solo la cuenta con rol `superadmin` puede crear otros administradores.
-- Los administradores nuevos pueden gestionar perros, pero no crear más cuentas.
-- La landing lee directamente la tabla `public.dogs`; una actualización aparece
-  al volver a cargar la página.
-
-La cuenta inicial se crea de forma segura sin escribir la contraseña en el
-repositorio:
+El script lee las credenciales desde variables del proceso, así la contraseña no queda escrita en ningún archivo:
 
 ```powershell
 $env:INITIAL_ADMIN_EMAIL = "correo@ejemplo.com"
@@ -214,28 +75,30 @@ Remove-Item Env:INITIAL_ADMIN_EMAIL, Env:INITIAL_ADMIN_PASSWORD
 Remove-Variable adminSecurePassword, adminCredential
 ```
 
-El script puede ejecutarse nuevamente para asegurar el rol `superadmin`; toma
-las credenciales solo de las variables del proceso. Para verificar RLS, CRUD y
-Storage de forma temporal y reversible se dispone de `npm run verify:supabase`
-con `VERIFY_ADMIN_EMAIL` y `VERIFY_ADMIN_PASSWORD` en el proceso.
+Puede ejecutarse de nuevo para asegurar el rol `superadmin`.
 
 ## Comandos
 
-- `npm run dev`: inicia el entorno de desarrollo.
-- `npm run lint`: revisa el código con ESLint.
-- `npm run build`: genera la compilación de producción.
-- `npm run bootstrap:superadmin`: crea o actualiza la primera superadmin.
-- `npm run verify:supabase`: comprueba migración, permisos, CRUD y Storage.
-- `npm start`: sirve la compilación de producción.
+| Comando | Descripción |
+| --- | --- |
+| `npm run dev` | Entorno de desarrollo. |
+| `npm run build` | Compilación de producción. |
+| `npm start` | Sirve la compilación de producción. |
+| `npm run lint` | Revisión con ESLint. |
+| `npm run bootstrap:superadmin` | Crea o actualiza la primera cuenta superadmin. |
+| `npm run optimize:images` | Recomprime a WebP las fotos subidas antes de la optimización automática. Sin `-- --apply` solo muestra el ahorro. |
+| `npm run verify:supabase` | Prueba permisos, CRUD y almacenamiento con registros temporales que elimina al terminar (requiere `VERIFY_ADMIN_EMAIL` y `VERIFY_ADMIN_PASSWORD`). |
 
-## Estructura principal
+## Estructura
 
-- `src/app/page.tsx`: composición de la landing.
-- `src/components/dog-catalog.tsx`: catálogo alimentado desde Supabase.
+- `src/app/page.tsx`: landing pública.
 - `src/app/admin`: login y panel administrativo.
-- `src/app/api/admin/users`: creación protegida de administradores.
-- `src/lib/supabase`: clientes aislados de navegador, servidor y service role.
-- `supabase/migrations`: esquema, datos iniciales, RLS y Storage versionados.
-- `src/app/globals.css`: sistema visual y estilos responsive.
+- `src/app/api`: creación de administradores y health check.
+- `src/components`: componentes de la landing, incluido el catálogo.
+- `src/lib/dogs.ts`: lectura cacheada del catálogo.
+- `src/lib/dog-actions.ts` y `src/lib/dog-editor.ts`: escrituras de perros e imágenes.
+- `src/lib/supabase`: clientes de Supabase para navegador, servidor y service role.
+- `supabase/migrations`: esquema, seguridad y datos iniciales.
+- `src/app/globals.css`: estilos.
 
-El archivo `index.html` original se conserva en la raíz como referencia visual durante las siguientes iteraciones.
+El archivo `index.html` de la raíz es la maqueta original y se conserva como referencia visual.

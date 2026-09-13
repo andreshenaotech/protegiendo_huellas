@@ -4,22 +4,14 @@ import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
 import { ArrowIcon, ChatIcon, EmailIcon, FacebookIcon, HeartIcon, InstagramIcon, PhoneIcon, PinIcon, SearchIcon, TikTokIcon } from "@/components/icons";
 import { ScrollReveals } from "@/components/scroll-reveals";
-import { getCurrentAdmin } from "@/lib/auth";
-import { createClient } from "@/lib/supabase/server";
+import { getPublishedDogs } from "@/lib/dogs";
 
-export const dynamic = "force-dynamic";
+// Página estática con revalidación: las ediciones del admin invalidan la caché
+// al instante (updateTag) y este intervalo cubre cambios hechos fuera de la app.
+export const revalidate = 300;
 
 export default async function Home() {
-  const supabase = await createClient();
-  const [admin, dogsResult] = await Promise.all([
-    getCurrentAdmin(),
-    supabase.from("dogs").select("*").order("id", { ascending: true }),
-  ]);
-  const { data: dogs, error } = dogsResult;
-
-  if (error) {
-    throw new Error("No fue posible cargar los perros en adopción.");
-  }
+  const dogs = await getPublishedDogs();
 
   return (
     <>
@@ -68,7 +60,7 @@ export default async function Home() {
           </div>
         </div>
 
-        <DogCatalog dogs={dogs} canEdit={Boolean(admin)} />
+        <DogCatalog dogs={dogs} />
 
         <section className="process-section" id="proceso">
           <div className="container">

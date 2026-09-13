@@ -11,31 +11,18 @@ import {
   useState,
 } from "react";
 import type { CurrentAdmin } from "@/lib/auth";
-import { DEFAULT_DOG_DESCRIPTION } from "@/lib/dog-content";
-import {
-  DOG_IMAGES_BUCKET,
-  DOG_IMAGE_TYPES,
-  getDogImageExtension,
-  getDogImageUrl,
-  MAX_DOG_IMAGE_SIZE,
-} from "@/lib/dog-images";
+import { deleteDog as deleteDogAction, removeDogImage } from "@/lib/dog-actions";
+import { DOG_FIELD_LIMITS, type Dog, type DogValues } from "@/lib/dog-content";
+import { submitDog, validateDogImageFile } from "@/lib/dog-editor";
+import { getDogImageUrl } from "@/lib/dog-images";
 import { createClient } from "@/lib/supabase/client";
-import type { Tables } from "@/types/database";
-
-type Dog = Tables<"dogs">;
 
 type AdminDashboardProps = {
   admin: CurrentAdmin;
   initialDogs: Dog[];
 };
 
-type DogFormState = {
-  name: string;
-  description: string;
-  age: string;
-  size: string;
-  status: string;
-};
+type DogFormState = DogValues;
 
 type Notice = {
   type: "success" | "error";
@@ -49,16 +36,6 @@ const emptyDogForm: DogFormState = {
   size: "",
   status: "",
 };
-
-function validateImage(file: File) {
-  if (!DOG_IMAGE_TYPES.includes(file.type as (typeof DOG_IMAGE_TYPES)[number])) {
-    return "La imagen debe ser JPG, PNG o WebP.";
-  }
-  if (file.size > MAX_DOG_IMAGE_SIZE) {
-    return "La imagen no puede superar 5 MB.";
-  }
-  return null;
-}
 
 function getErrorMessage(error: unknown, fallback: string) {
   if (error instanceof Error && error.message) return error.message;
@@ -120,7 +97,7 @@ export function AdminDashboard({ admin, initialDogs }: AdminDashboardProps) {
       setImageFile(null);
       return;
     }
-    const validationError = validateImage(file);
+    const validationError = validateDogImageFile(file);
     if (validationError) {
       setDogNotice({ type: "error", text: validationError });
       event.target.value = "";
@@ -130,123 +107,28 @@ export function AdminDashboard({ admin, initialDogs }: AdminDashboardProps) {
     setImageFile(file);
   };
 
-  const uploadImage = async (dogId: number, file: File) => {
-    const extension = getDogImageExtension(file);
-    const path = `${dogId}/${crypto.randomUUID()}.${extension}`;
-    const { error } = await supabase.storage
-      .from(DOG_IMAGES_BUCKET)
-      .upload(path, file, {
-        cacheControl: "3600",
-        contentType: file.type,
-        upsert: false,
-      });
-
-    if (error) throw new Error("No fue posible subir la imagen.");
-    return path;
-  };
-
   const handleDogSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setDogNotice(null);
+    setDogBusy(true);
 
-    const values = {
-      name: dogForm.name.trim(),
-      description: dogForm.description.trim() || DEFAULT_DOG_DESCRIPTION,
-      age: dogForm.age.trim(),
-      size: dogForm.size.trim(),
-      status: dogForm.status.trim(),
-    };
+    const result = await submitDog({ id: editingId, values: dogForm, imageFile });
 
-    if (!values.name || !values.age || !values.size || !values.status) {
-      setDogNotice({ type: "error", text: "Completa nombre, edad, tamaño y estado." });
+    setDogBusy(false);
+    if (!result.ok || !result.dog) {
+      setDogNotice({ type: "error", text: result.ok ? "No fue posible guardar la información." : result.error });
       return;
     }
 
-    setDogBusy(true);
-
-    try {
-      if (editingId === null) {
-        const { data: insertedDog, error: insertError } = await supabase
-          .from("dogs")
-          .insert(values)
-          .select("*")
-          .single();
-
-        if (insertError || !insertedDog) {
-          throw new Error("No fue posible agregar el perro.");
-        }
-
-        let savedDog = insertedDog;
-        let uploadedPath: string | null = null;
-
-        try {
-          if (imageFile) {
-            uploadedPath = await uploadImage(insertedDog.id, imageFile);
-            const { data: updatedDog, error: updateError } = await supabase
-              .from("dogs")
-              .update({ image_path: uploadedPath })
-              .eq("id", insertedDog.id)
-              .select("*")
-              .single();
-
-            if (updateError || !updatedDog) {
-              throw new Error("La imagen se subió, pero no fue posible asociarla al perro.");
-            }
-            savedDog = updatedDog;
-          }
-        } catch (error) {
-          if (uploadedPath) {
-            await supabase.storage.from(DOG_IMAGES_BUCKET).remove([uploadedPath]);
-          }
-          await supabase.from("dogs").delete().eq("id", insertedDog.id);
-          throw error;
-        }
-
-        setDogs((current) => [savedDog, ...current]);
-        resetDogForm();
-        setDogNotice({ type: "success", text: `${savedDog.name} fue agregado correctamente.` });
-      } else {
-        const currentDog = dogs.find((dog) => dog.id === editingId);
-        if (!currentDog) throw new Error("No encontramos el perro que quieres editar.");
-
-        let uploadedPath: string | null = null;
-        try {
-          if (imageFile) uploadedPath = await uploadImage(editingId, imageFile);
-
-          const { data: updatedDog, error: updateError } = await supabase
-            .from("dogs")
-            .update({
-              ...values,
-              ...(uploadedPath ? { image_path: uploadedPath } : {}),
-            })
-            .eq("id", editingId)
-            .select("*")
-            .single();
-
-          if (updateError || !updatedDog) {
-            throw new Error("No fue posible guardar los cambios.");
-          }
-
-          if (uploadedPath && currentDog.image_path) {
-            await supabase.storage.from(DOG_IMAGES_BUCKET).remove([currentDog.image_path]);
-          }
-
-          setDogs((current) => current.map((dog) => dog.id === editingId ? updatedDog : dog));
-          resetDogForm();
-          setDogNotice({ type: "success", text: `${updatedDog.name} fue actualizado correctamente.` });
-        } catch (error) {
-          if (uploadedPath) {
-            await supabase.storage.from(DOG_IMAGES_BUCKET).remove([uploadedPath]);
-          }
-          throw error;
-        }
-      }
-      router.refresh();
-    } catch (error) {
-      setDogNotice({ type: "error", text: getErrorMessage(error, "No fue posible guardar la información.") });
-    } finally {
-      setDogBusy(false);
+    const savedDog = result.dog;
+    if (editingId === null) {
+      setDogs((current) => [savedDog, ...current]);
+      setDogNotice({ type: "success", text: `${savedDog.name} fue agregado correctamente.` });
+    } else {
+      setDogs((current) => current.map((dog) => dog.id === savedDog.id ? savedDog : dog));
+      setDogNotice({ type: "success", text: `${savedDog.name} fue actualizado correctamente.` });
     }
+    resetDogForm();
   };
 
   const removeCurrentImage = async () => {
@@ -257,56 +139,19 @@ export function AdminDashboard({ admin, initialDogs }: AdminDashboardProps) {
     );
     if (!confirmed) return;
 
-    const previousPath = editingDog.image_path;
     setDogBusy(true);
     setDogNotice(null);
-
-    const { data: dogWithoutImage, error: updateError } = await supabase
-      .from("dogs")
-      .update({ image_path: null })
-      .eq("id", editingDog.id)
-      .select("*")
-      .single();
-
-    if (updateError || !dogWithoutImage) {
-      setDogNotice({ type: "error", text: "No fue posible quitar la imagen de la ficha." });
-      setDogBusy(false);
-      return;
-    }
-
-    const { error: storageError } = await supabase.storage
-      .from(DOG_IMAGES_BUCKET)
-      .remove([previousPath]);
-
-    if (storageError) {
-      const { data: restoredDog, error: restoreError } = await supabase
-        .from("dogs")
-        .update({ image_path: previousPath })
-        .eq("id", editingDog.id)
-        .select("*")
-        .single();
-
-      if (!restoreError && restoredDog) {
-        setDogs((current) => current.map((dog) => dog.id === editingDog.id ? restoredDog : dog));
-      } else {
-        setDogs((current) => current.map((dog) => dog.id === editingDog.id ? dogWithoutImage : dog));
-      }
-
-      setDogNotice({
-        type: "error",
-        text: restoreError
-          ? "La imagen dejó de mostrarse, pero el archivo no pudo eliminarse de Storage."
-          : "No fue posible eliminar el archivo de imagen. La ficha conserva la imagen anterior.",
-      });
-      setDogBusy(false);
-      router.refresh();
-      return;
-    }
-
-    setDogs((current) => current.map((dog) => dog.id === editingDog.id ? dogWithoutImage : dog));
-    setDogNotice({ type: "success", text: `La imagen de ${editingDog.name} fue eliminada.` });
+    const result = await removeDogImage(editingDog.id).catch(() => null);
     setDogBusy(false);
-    router.refresh();
+
+    if (!result?.ok || !result.dog) {
+      setDogNotice({ type: "error", text: result && !result.ok ? result.error : "No fue posible quitar la imagen de la ficha." });
+      return;
+    }
+
+    const updatedDog = result.dog;
+    setDogs((current) => current.map((dog) => dog.id === updatedDog.id ? updatedDog : dog));
+    setDogNotice({ type: "success", text: `La imagen de ${updatedDog.name} fue eliminada.` });
   };
 
   const startEditing = (dog: Dog) => {
@@ -330,23 +175,17 @@ export function AdminDashboard({ admin, initialDogs }: AdminDashboardProps) {
 
     setDogBusy(true);
     setDogNotice(null);
-    const { error } = await supabase.from("dogs").delete().eq("id", dog.id);
+    const result = await deleteDogAction(dog.id).catch(() => null);
+    setDogBusy(false);
 
-    if (error) {
+    if (!result?.ok) {
       setDogNotice({ type: "error", text: `No fue posible eliminar a ${dog.name}.` });
-      setDogBusy(false);
       return;
-    }
-
-    if (dog.image_path) {
-      await supabase.storage.from(DOG_IMAGES_BUCKET).remove([dog.image_path]);
     }
 
     setDogs((current) => current.filter((item) => item.id !== dog.id));
     if (editingId === dog.id) resetDogForm();
     setDogNotice({ type: "success", text: `${dog.name} fue eliminado.` });
-    setDogBusy(false);
-    router.refresh();
   };
 
   const createAdmin = async (event: FormEvent<HTMLFormElement>) => {
@@ -452,26 +291,26 @@ export function AdminDashboard({ admin, initialDogs }: AdminDashboardProps) {
             <form className="admin-form" onSubmit={handleDogSubmit}>
               <label className="admin-field">
                 <span>Nombre</span>
-                <input required maxLength={80} value={dogForm.name} onChange={(event) => updateDogField("name", event.target.value)} />
+                <input required maxLength={DOG_FIELD_LIMITS.name} value={dogForm.name} onChange={(event) => updateDogField("name", event.target.value)} />
               </label>
               <label className="admin-field">
                 <span>Descripción</span>
-                <textarea rows={5} maxLength={1200} placeholder="Cuenta un poco sobre su historia y personalidad." value={dogForm.description} onChange={(event) => updateDogField("description", event.target.value)} />
+                <textarea rows={5} maxLength={DOG_FIELD_LIMITS.description} placeholder="Cuenta un poco sobre su historia y personalidad." value={dogForm.description} onChange={(event) => updateDogField("description", event.target.value)} />
                 <small>Si la dejas vacía, se agregará automáticamente el texto informativo predeterminado.</small>
               </label>
               <div className="admin-field-row">
                 <label className="admin-field">
                   <span>Edad</span>
-                  <input required maxLength={50} placeholder="Ej. 3 años" value={dogForm.age} onChange={(event) => updateDogField("age", event.target.value)} />
+                  <input required maxLength={DOG_FIELD_LIMITS.age} placeholder="Ej. 3 años" value={dogForm.age} onChange={(event) => updateDogField("age", event.target.value)} />
                 </label>
                 <label className="admin-field">
                   <span>Tamaño</span>
-                  <input required maxLength={80} placeholder="Ej. Mediana" value={dogForm.size} onChange={(event) => updateDogField("size", event.target.value)} />
+                  <input required maxLength={DOG_FIELD_LIMITS.size} placeholder="Ej. Mediana" value={dogForm.size} onChange={(event) => updateDogField("size", event.target.value)} />
                 </label>
               </div>
               <label className="admin-field">
                 <span>Estado</span>
-                <input required maxLength={160} placeholder="Ej. Esterilizada y vacunada" value={dogForm.status} onChange={(event) => updateDogField("status", event.target.value)} />
+                <input required maxLength={DOG_FIELD_LIMITS.status} placeholder="Ej. Esterilizada y vacunada" value={dogForm.status} onChange={(event) => updateDogField("status", event.target.value)} />
                 <small>Es un texto libre: esterilizado, castrado, vacunado u otra información.</small>
               </label>
               {editingDog?.image_path && (
@@ -491,7 +330,7 @@ export function AdminDashboard({ admin, initialDogs }: AdminDashboardProps) {
               <label className="admin-field admin-file-field">
                 <span>{editingId === null ? "Imagen" : "Nueva imagen"}</span>
                 <input ref={fileInputRef} type="file" accept="image/jpeg,image/png,image/webp" onChange={handleImageChange} />
-                <small>{imageFile ? imageFile.name : editingId === null ? "JPG, PNG o WebP. Máximo 5 MB." : "Déjalo vacío para conservar la imagen actual."}</small>
+                <small>{imageFile ? imageFile.name : editingId === null ? "JPG, PNG o WebP. Se optimiza automáticamente." : "Déjalo vacío para conservar la imagen actual."}</small>
               </label>
               {dogNotice && <p className={`admin-message ${dogNotice.type}`} role="status">{dogNotice.text}</p>}
               <button className="btn btn-primary admin-submit" type="submit" disabled={dogBusy}>

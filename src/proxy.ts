@@ -6,5 +6,6 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/", "/admin/:path*"],
+  // La landing no pasa por aquí para poder servirse desde caché.
+  matcher: ["/admin/:path*"],
 };

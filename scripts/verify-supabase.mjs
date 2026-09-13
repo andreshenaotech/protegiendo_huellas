@@ -27,19 +27,11 @@ let temporaryImagePath = null;
 let temporaryUserId = null;
 
 try {
-  const { data: migratedDogs, error: migratedDogsError } = await publicClient
+  // No se asume el contenido del seed: en producción los perros cambian.
+  const { count: initialCount, error: initialCountError } = await publicClient
     .from("dogs")
-    .select("id, name, description, image_path")
-    .order("id", { ascending: true });
-  if (migratedDogsError) throw migratedDogsError;
-  if (migratedDogs.length !== 51) throw new Error(`Se esperaban 51 perros y hay ${migratedDogs.length}.`);
-  if (migratedDogs[0]?.name !== "Ámbar") throw new Error("El nombre Ámbar no conserva su codificación correcta.");
-  if (!migratedDogs.some((dog) => dog.name === "Muñeco")) throw new Error("Falta Muñeco o su nombre está mal codificado.");
-  if (!migratedDogs.some((dog) => dog.name === "Milú")) throw new Error("Falta Milú o su nombre está mal codificado.");
-  if (migratedDogs.filter((dog) => dog.name === "Tigre").length !== 2) throw new Error("Deben existir dos perros llamados Tigre.");
-  if (!migratedDogs.every((dog) => dog.description === null && dog.image_path === null)) {
-    throw new Error("La migración inicial debe conservar descripciones e imágenes pendientes.");
-  }
+    .select("id", { count: "exact", head: true });
+  if (initialCountError || initialCount === null) throw initialCountError ?? new Error("No se pudo leer la tabla dogs.");
 
   const temporaryEmail = `rls-check-${Date.now()}@example.invalid`;
   const temporaryPassword = `RlsCheck-${crypto.randomUUID()}!`;
@@ -141,15 +133,13 @@ try {
   const { count: finalCount, error: finalCountError } = await publicClient
     .from("dogs")
     .select("id", { count: "exact", head: true });
-  if (finalCountError || finalCount !== 51) {
+  if (finalCountError || finalCount !== initialCount) {
     throw finalCountError ?? new Error("La prueba temporal no dejó la tabla en su estado inicial.");
   }
 
   await adminClient.auth.signOut();
   console.log(JSON.stringify({
-    migratedDogs: 51,
-    accentsVerified: true,
-    duplicateTigreVerified: true,
+    dogs: finalCount,
     nonAdminWriteBlocked: true,
     adminCrudVerified: true,
     storageVerified: true,

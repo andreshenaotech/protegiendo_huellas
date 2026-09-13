@@ -8,12 +8,13 @@
     "start": "next start",
     "lint": "eslint .",
     "bootstrap:superadmin": "node --env-file=.env.local scripts/bootstrap-superadmin.mjs",
-    "verify:supabase": "node --env-file=.env.local scripts/verify-supabase.mjs"
+    "verify:supabase": "node --env-file=.env.local scripts/verify-supabase.mjs",
+    "optimize:images": "node --env-file=.env.local scripts/optimize-dog-images.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "0.12.3",
     "@supabase/supabase-js": "2.110.7",
-    "next": "16.2.10",
+    "next": "16.3.5",
     "react": "19.2.7",
     "react-dom": "19.2.7"
   },
@@ -22,7 +23,8 @@
     "@types/react": "19.2.17",
     "@types/react-dom": "19.2.3",
     "eslint": "9.39.5",
-    "eslint-config-next": "16.2.10",
+    "eslint-config-next": "16.3.5",
+    "sharp": "0.35.4",
     "supabase": "2.109.1",
     "typescript": "6.0.3"
   }
