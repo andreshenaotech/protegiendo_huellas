@@ -138,9 +138,8 @@ export default function AdoptionsPage() {
         <section className="adoption-meet-section">
           <div className="container">
             <div className="adoption-meet" data-reveal="up">
-              {/* Imagen provisional: reemplazar por una foto propia de adopciones. */}
               <div className="adoption-meet-photo">
-                <Image src="/dog1.png" alt="Perrito de la Fundación Protegiendo Huellas" fill sizes="(max-width: 820px) calc(100vw - 28px), 460px" />
+                <Image src="/peludo.webp" alt="Perrito de la Fundación Protegiendo Huellas" fill sizes="(max-width: 820px) calc(100vw - 28px), 460px" />
               </div>
               <div className="adoption-meet-copy">
                 <p className="eyebrow">Antes de decidir</p>

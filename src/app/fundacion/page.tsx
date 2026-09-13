@@ -103,7 +103,7 @@ export default function FoundationPage() {
           <div className="container foundation-founder">
             <div className="foundation-founder-visual" data-reveal="up">
               <div className="foundation-founder-photo">
-                <Image src="/yazmid.jpeg" alt="Yazmid Navarro Matoma, fundadora y directora de Protegiendo Huellas" fill sizes="(max-width: 820px) calc(100vw - 28px), 560px" />
+                <Image src="/yazmid1.webp" alt="Yazmid Navarro Matoma, fundadora y directora de Protegiendo Huellas" fill sizes="(max-width: 820px) calc(100vw - 28px), 560px" />
               </div>
               <p className="foundation-founder-tag">
                 <strong>Yazmid Navarro Matoma</strong>

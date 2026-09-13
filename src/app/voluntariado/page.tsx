@@ -123,10 +123,9 @@ export default function VolunteerPage() {
               </div>
             </div>
 
-            {/* Imagen provisional: reemplazar por una foto propia del voluntariado. */}
             <div className="volunteer-hero-circle" data-reveal="left">
               <Image
-                src="/dog1.png"
+                src="/Hazte_volun.webp"
                 alt="Perrito de la Fundación Protegiendo Huellas"
                 fill
                 preload
@@ -152,7 +151,7 @@ export default function VolunteerPage() {
             <div className="volunteer-why-visual" data-reveal="right">
               <div className="volunteer-why-photo">
                 <Image
-                  src="/dog1.png"
+                  src="/porque_volun.webp"
                   alt="Perrito del refugio de la Fundación Protegiendo Huellas"
                   fill
                   sizes="(max-width: 820px) 80vw, 440px"
@@ -232,7 +231,7 @@ export default function VolunteerPage() {
               <span className="volunteer-foster-blob" aria-hidden="true" />
               <div className="volunteer-foster-photo">
                 <Image
-                  src="/dog1.png"
+                  src="/hogar_paso.webp"
                   alt="Perrito en un hogar de paso"
                   fill
                   sizes="(max-width: 820px) 80vw, 440px"

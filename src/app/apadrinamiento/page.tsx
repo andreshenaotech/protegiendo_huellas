@@ -138,7 +138,7 @@ export default function SponsorshipPage() {
 
             <div className="sponsor-hero-visual" data-reveal="right">
               <Image
-                src="/dog1.png"
+                src="/apadrina_hero.webp"
                 alt="Perrito de la Fundación Protegiendo Huellas"
                 fill
                 preload
@@ -175,11 +175,10 @@ export default function SponsorshipPage() {
 
         <section className="sponsor-why-section" id="padrino-solidario">
           <div className="container sponsor-program">
-            {/* Imagen provisional: reemplazar por una foto propia del programa. */}
             <div className="sponsor-program-visual" data-reveal="left">
               <div className="sponsor-program-photo">
                 <Image
-                  src="/dog1.png"
+                  src="/padrino_soli.webp"
                   alt="Perrito apadrinado en la Fundación Protegiendo Huellas"
                   fill
                   sizes="(max-width: 820px) calc(100vw - 28px), 460px"
@@ -310,11 +309,10 @@ export default function SponsorshipPage() {
               </div>
             </div>
 
-            {/* Imagen provisional: reemplazar por una foto propia del programa. */}
             <div className="sponsor-program-visual" data-reveal="right">
               <div className="sponsor-program-photo">
                 <Image
-                  src="/dog1.png"
+                  src="/Padrino_ing.webp"
                   alt="Perrito rescatado en la Fundación Protegiendo Huellas"
                   fill
                   sizes="(max-width: 820px) calc(100vw - 28px), 460px"

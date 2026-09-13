@@ -60,7 +60,7 @@ export default async function EventsPage() {
           <div className="container">
             <div data-reveal="up">
               <p className="eyebrow">Agenda</p>
-              <h2 className="section-title">Próximos eventos</h2>
+              <h2 className="section-title">Próximos eventos solidarios</h2>
             </div>
 
             {upcoming.length > 0 ? (
