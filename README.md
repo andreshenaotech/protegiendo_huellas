@@ -115,5 +115,3 @@ Puede ejecutarse de nuevo para asegurar el rol `superadmin`.
 - `src/lib/supabase`: clientes de Supabase para navegador, servidor y service role.
 - `supabase/migrations`: esquema, seguridad y datos iniciales.
 - `src/app/globals.css`: estilos.
-
-El archivo `index.html` de la raíz es la maqueta original y se conserva como referencia visual.
